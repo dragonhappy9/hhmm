@@ -8,45 +8,47 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+// import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.hhmm.DTO.ItemDTO;
 import com.example.hhmm.Entity.Item;
 import com.example.hhmm.Repository.ItemRepository;
-
-import jakarta.annotation.PostConstruct;
+import com.example.hhmm.Service.ItemService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
 
+    private final ItemService itemService;
     private final ItemRepository itemRepository;
 
-    @PostConstruct
-    public void init() {
-        itemRepository.save(new Item("itemA", 10000, 10));
-        itemRepository.save(new Item("itemB", 20000, 20));
-    }
+    // @PostConstruct
+    // public void init() {
+    //     itemRepository.save(new Item("itemA", 10000, 10));
+    //     itemRepository.save(new Item("itemB", 20000, 20));
+    // }
 
     // 모델 전체 불러오기
     @GetMapping
     public String items(Model model) {
-        List<Item> items = itemRepository.findAll();
+        List<Item> items = this.itemService.getList();
         model.addAttribute("items", items);
 
-        return "/items";
+        return "items";
     }
 
     // itemId로 검색
     @GetMapping("/{itemId}")
-    public String item(Model model, @PathVariable Long itemId) {
-        Item item = itemRepository.findById(itemId);
+    public String item(Model model, @PathVariable("itemId") Long itemId) {
+        Item item = this.itemService.getItem(itemId);
         model.addAttribute("item", item);
 
-        return "/item";
+        return "item";
     }
 
     // add폼
@@ -124,25 +126,22 @@ public class ItemController {
     // 그래서 리다이렉트 된 페이지에 이런 결과를 노출하고싶을 때 
     // RedirectAttributes를 이용하면 된다.
     @PostMapping("/add")
-    public String saveV6(Item item, RedirectAttributes redirectAttributes) {
-        Item savedItem = itemRepository.save(item);
-        redirectAttributes.addAttribute("itemId", savedItem.getId());
-        redirectAttributes.addAttribute("status", true);
-
-        return "redirect:/items/{itemId}";
+    public String addItem(@ModelAttribute ItemDTO itemDTO) {
+        itemService.addItem(itemDTO);
+        return "redirect:/items";
     }
 
     @GetMapping("/{itemId}/edit")
     public String editForm(@PathVariable Long itemId, Model model) {
-        Item item = itemRepository.findById(itemId);
+        Optional<Item> item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
 
         return "editForm";
     }
 
-    @PostMapping("/{itemId}/edit")
-    public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
-        itemRepository.update(itemId, item);
-        return "redirect:/items/{itemId}";
-    }
+    // @PostMapping("/{itemId}/edit")
+    // public String edit(@PathVariable Long itemId, @ModelAttribute Item item) {
+    //     itemRepository.update(itemId, item);
+    //     return "redirect:/items/{itemId}";
+    // }
 }
