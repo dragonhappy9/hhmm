@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import lombok.Data;
 
+import java.util.List;
+import java.util.ArrayList;
 
 @Data
 @Entity
@@ -14,7 +17,7 @@ public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long itemId;
+    private Long item_id;
 
     @Column(length = 30, nullable = false)
     private String itemName;
@@ -24,6 +27,9 @@ public class Item {
 
     @Column(nullable = false)
     private Integer quantity;
+
+    @ManyToMany(mappedBy = "itemList")
+    private List<MyBucket> myBuckets = new ArrayList<>();
 
     public Item() {}
 

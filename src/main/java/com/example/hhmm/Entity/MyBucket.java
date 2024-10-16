@@ -10,7 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
 
@@ -20,14 +21,17 @@ public class MyBucket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long bucket_id;
 
-    @OneToOne
-    @JoinColumn(name = "customer_id")
+    @OneToOne(mappedBy = "myBucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Customer customer;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "bucket_id")
+    @ManyToMany
+    @JoinTable(
+        name = "bucket_item", 
+        joinColumns = @JoinColumn(name = "bucket_id"), 
+        inverseJoinColumns = @JoinColumn(name = "item_id") 
+    )
     private List<Item> itemList = new ArrayList<>();
 
     public MyBucket() {}
