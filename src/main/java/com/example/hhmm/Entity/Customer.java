@@ -26,7 +26,7 @@ public class Customer {
     @Column(length = 50, nullable = false)
     private String name;
 
-    @Column(length = 20, nullable = false, unique = true)
+    @Column(length = 30, nullable = false, unique = true)
     private String nickname;
 
     @Column(nullable = false)

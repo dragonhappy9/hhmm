@@ -28,10 +28,10 @@ public class Comment {
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime reg_date = LocalDateTime.now();
 
-    @Column(nullable = false, columnDefinition= "DEFAULT 0")
+    @Column(nullable = false)
     private int good = 0;
 
-    @Column(nullable = false, columnDefinition= "DEFAULT 0")
+    @Column(nullable = false)
     private int bad = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
