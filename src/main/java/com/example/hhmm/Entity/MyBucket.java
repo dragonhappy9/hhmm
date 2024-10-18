@@ -21,16 +21,16 @@ public class MyBucket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bucket_id;
+    private Long bucketId;
 
     @OneToOne(mappedBy = "myBucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Customer customer;
 
     @ManyToMany
     @JoinTable(
-        name = "bucket_item", 
-        joinColumns = @JoinColumn(name = "bucket_id"), 
-        inverseJoinColumns = @JoinColumn(name = "item_id") 
+        name = "bucketItem", 
+        joinColumns = @JoinColumn(name = "bucketId"), 
+        inverseJoinColumns = @JoinColumn(name = "itemId") 
     )
     private List<Item> itemList = new ArrayList<>();
 

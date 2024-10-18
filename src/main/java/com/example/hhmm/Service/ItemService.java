@@ -28,7 +28,7 @@ public class ItemService {
         if (item.isPresent()) {
             return item.get();
         } else {
-            throw new DataNotFoundException("question not found");
+            throw new DataNotFoundException("Item not found");
         }
     }
     

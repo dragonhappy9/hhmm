@@ -17,30 +17,25 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long comment_id;
-    
-    @Column(nullable = false, columnDefinition = "text")
+    private Long commentId;
+
+    @Column(nullable = false, length = 30)
+    private String nickname;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 20, nullable = false)
-    @JoinColumn(name = "name")
-    private String name;
-
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime reg_date;
+    private LocalDateTime reg_date = LocalDateTime.now();
 
-    @Column(nullable = false)
-    private int good;
+    @Column(nullable = false, columnDefinition= "DEFAULT 0")
+    private int good = 0;
 
-    @Column(nullable = false)
-    private int bad;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @Column(nullable = false, columnDefinition= "DEFAULT 0")
+    private int bad = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @JoinColumn(name = "postId", nullable = false)
     private Post post;
 
     public Comment(){}
