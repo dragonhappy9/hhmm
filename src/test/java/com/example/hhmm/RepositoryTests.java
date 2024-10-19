@@ -37,7 +37,6 @@ class RepositoryTests {
             Comment comment = new Comment();
             comment.setContent("호잇");
             comment.setNickname("김용희");
-            comment.setPost(post.get());
             this.commentRepository.save(comment);
         }
     }

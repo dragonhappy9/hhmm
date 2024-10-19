@@ -125,6 +125,7 @@ public class ItemController {
     // 정상적으로 완료되었는지를 알 수 없다. 
     // 그래서 리다이렉트 된 페이지에 이런 결과를 노출하고싶을 때 
     // RedirectAttributes를 이용하면 된다.
+    
     @PostMapping("/add")
     public String addItem(@ModelAttribute ItemDTO itemDTO) {
         itemService.addItem(itemDTO);
