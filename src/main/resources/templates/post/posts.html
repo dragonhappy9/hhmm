@@ -1,0 +1,30 @@
+<!-- <html layout:decorate="~{layout}"> -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <div layout:fragment="content" class="container my-3" >
+        <table class="table">
+            <thead class="table-dark">
+                <tr>
+                    <th>포스트 번호</th>
+                    <th>제목</th>
+                    <th>작성 일시</th>
+                    <th>작성자</th>
+                    <th>조회수</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="post, loop : ${posts}">
+                    <td>
+                    <a th:href="@{|/post/${post.postId}|}" th:text="${post.postId}"></a>
+                    </td>
+                    <td>
+                    <a th:href="@{|/post/${post.postId}|}" th:text="${post.title}"></a>
+                    </td>
+                    <td th:text="${#temporals.format(post.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${post.nickname}"></td>
+                    <td th:text="${post.viewCount}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/post/create}" class="btn btn-primary">게시글 등록하기</a>
+    </div>
+<!-- </html> -->

@@ -19,7 +19,7 @@ class RepositoryTests {
     @Autowired
     private CommentRepository commentRepository;
 
-    /* 포스트 생성
+    
     @Test
     void testJPA(){
         Post post = new Post();
@@ -27,17 +27,18 @@ class RepositoryTests {
         post.setContent("테스트 1번");
         post.setNickname("홍길동");
         this.postRepository.save(post);
-    }*/
+    }
 
-    
     @Test
-    void testJPA(){
+    void testJPA2(){
         Optional<Post> post = this.postRepository.findById(1L);
         if(post.isPresent()){
             Comment comment = new Comment();
             comment.setContent("호잇");
             comment.setNickname("김용희");
+            comment.setPostId(post.get().getPostId());
             this.commentRepository.save(comment);
         }
     }
+
 }

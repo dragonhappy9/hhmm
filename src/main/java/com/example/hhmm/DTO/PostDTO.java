@@ -2,12 +2,14 @@ package com.example.hhmm.DTO;
 
 import java.time.LocalDateTime;
 
+import com.example.hhmm.Entity.Post;
+
 import lombok.Data;
 
 @Data
 public class PostDTO {
 
-    private Long post_id;
+    private Long postId;
 
     private String nickname;
 
@@ -15,12 +17,25 @@ public class PostDTO {
     
     private String content;
 
-    private LocalDateTime reg_date;
+    private LocalDateTime regDate;
 
-    private int view_count;
+    private int viewCount;
 
     private int good;
 
     private int bad;
+
+    public PostDTO(){};
+
+    public PostDTO(Post post) {
+        this.postId = post.getPostId();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.nickname = post.getNickname();
+        this.viewCount = post.getView_count();
+        this.good = post.getGood();
+        this.bad = post.getBad();
+        this.regDate = post.getReg_date();
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.hhmm.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
@@ -19,14 +20,20 @@ public class PostService {
 
     // Post 목록 가져오기
     @Transactional(readOnly = true)
-    public List<Post> getPostList(){
-        return this.postRepository.findAll();
+    public List<PostDTO> getPostList() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                    .map(PostDTO::new) // 엔티티를 DTO로 변환
+                    .collect(Collectors.toList());
     }
 
     // Post 가져오기
     @Transactional(readOnly = true)
-    public Post getPost(Long postId){
-        return this.postRepository.findById(postId).orElseThrow(() -> new DataNotFoundException("Post not found"));
+    public PostDTO getPost(Long postId){
+        Post post = this.postRepository.findById(postId)
+                        .orElseThrow(() -> new DataNotFoundException("Post not found"));
+        PostDTO postDTO = new PostDTO(post);
+        return postDTO;
     }
 
     // Post Create
@@ -45,17 +52,19 @@ public class PostService {
 
     // Post Read
     @Transactional
-    public Post readPost(Long postId) {
+    public PostDTO readPost(Long postId) {
         Post post = this.postRepository.findById(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         post.setView_count(post.getView_count() + 1);  // 조회수 증가
-        return post;
+        PostDTO postDTO = new PostDTO(post);
+        return postDTO;
     }
 
     // Post Update
     @Transactional
     public void updatePost(Long postId, PostDTO postDTO){
-        Post post = this.postRepository.findById(postId).get(); 
+        Post post = this.postRepository.findById(postId)
+                        .orElseThrow(() -> new DataNotFoundException("Post not found")); 
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         post.setReg_date(LocalDateTime.now());

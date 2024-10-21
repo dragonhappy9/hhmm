@@ -1,16 +1,17 @@
 package com.example.hhmm.Controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.hhmm.DTO.PostDTO;
-import com.example.hhmm.Entity.Post;
+import com.example.hhmm.DTO.CommentDTO;
+import com.example.hhmm.Service.CommentService;
 import com.example.hhmm.Service.PostService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,35 +19,36 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 
-@RestController
-@RequestMapping("/posts")
+@Controller
+@RequestMapping("/post")
 @RequiredArgsConstructor
 public class PostController {
     
     private final PostService postService;
+    private final CommentService commentService;
 
     // 모델 전체 불러오기
-    @GetMapping
+    @GetMapping("/posts")
     public String posts(Model model) {
-        List<Post> posts = this.postService.getPostList();
-        model.addAttribute("posts", posts);
-
-        return "posts";
+        List<PostDTO> postDTOs = this.postService.getPostList();
+        model.addAttribute("posts", postDTOs);
+        return "post/posts";
     }
 
     // postId로 검색
     @GetMapping("/{postId}")
-    public String read(Model model, @PathVariable("postId") Long postId) {
-        Post post = this.postService.readPost(postId);
-        model.addAttribute("post", post);
-
-        return "post";
+    public String read(@PathVariable("postId") Long postId, Model model) {
+        PostDTO postDTO = this.postService.readPost(postId);
+        List<CommentDTO> commentDTOs = this.commentService.getCommentsByPost(postId);
+        model.addAttribute("post", postDTO);
+        model.addAttribute("comments", commentDTOs);
+        return "post/post_detail";
     }
 
-    // create 요청
+    // create 요청페이지
     @GetMapping("/create")
     public String create() {
-        return "createPost";
+        return "post/post_create";
     }
 
     // 리다이렉트를 통해 페이지를 이동하는 것은 좋은데, 
@@ -57,38 +59,34 @@ public class PostController {
     
     // create 응답
     @PostMapping("/create")
-    public String createPost(@ModelAttribute PostDTO postDTO) {
+    public String createPost(@ModelAttribute PostDTO postDTO, RedirectAttributes redirectAttributes) {
         postService.createPost(postDTO);
-        return "redirect:/posts";
+        redirectAttributes.addFlashAttribute("message", "Post create 성공");
+        return "redirect:/post/posts";
     }
 
-    // update 요청
-    @GetMapping("/{postId}/update")
+    // update 요청페이지
+    @GetMapping("/update/{postId}")
     public String update(@PathVariable Long postId, Model model) {
-        Post post = postService.getPost(postId);
-        model.addAttribute("post", post);
-
-        return "updatePost";
+        PostDTO postDTO = postService.getPost(postId);
+        model.addAttribute("post", postDTO);
+        return "post/post_update";
     }
 
     // update 응답
-    @PostMapping("/{postId}/update")
-    public String updatePost(@PathVariable Long postId, @ModelAttribute PostDTO postDTO) {
+    @PostMapping("/update/{postId}")
+    public String updatePost(@PathVariable Long postId, @ModelAttribute PostDTO postDTO, RedirectAttributes redirectAttributes) {
         postService.updatePost(postId, postDTO);
-        return "redirect:/posts";
-    }
-
-    // delete 요청
-    @DeleteMapping("/{postId}")
-    public void deletePost(@PathVariable Long postId) {
-        postService.deletePost(postId);
+        redirectAttributes.addFlashAttribute("message", "Post update 성공");
+        return "redirect:/post/posts";
     }
 
     // delete 응답
-    @PostMapping("/{postId}/delete")
-    public String deletePost(@PathVariable Long postId, @ModelAttribute PostDTO postDTO) {
+    @PostMapping("/delete/{postId}")
+    public String deletePost(@PathVariable Long postId, RedirectAttributes redirectAttributes) {
         postService.deletePost(postId);
-        return "redirect:/posts";
+        redirectAttributes.addFlashAttribute("message", "Post delete 성공");
+        return "redirect:/post/posts";
     }
     
 }

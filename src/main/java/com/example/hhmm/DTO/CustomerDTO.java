@@ -7,9 +7,9 @@ public class CustomerDTO {
     
     private Long id;
     
-    private String c_id;
+    private String cId;
 
-    private String c_pw;
+    private String cPw;
     
     private String name;
 
