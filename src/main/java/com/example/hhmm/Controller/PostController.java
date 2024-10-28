@@ -1,25 +1,26 @@
 package com.example.hhmm.Controller;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.data.domain.Page;
-
-import com.example.hhmm.DTO.PostDTO;
-import com.example.hhmm.DTO.CommentDTO;
-import com.example.hhmm.Service.CommentService;
-import com.example.hhmm.Service.PostService;
-
-import lombok.RequiredArgsConstructor;
-
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.example.hhmm.DTO.CommentDTO;
+import com.example.hhmm.DTO.PostDTO;
+import com.example.hhmm.Service.CommentService;
+import com.example.hhmm.Service.PostService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/post")
@@ -33,23 +34,23 @@ public class PostController {
     @GetMapping("/posts")
     public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page) {
         Page<PostDTO> postDTOs = this.postService.getPostList(page);
-        model.addAttribute("posts", postDTOs);
+        model.addAttribute("postDTOs", postDTOs);
         return "post/posts";
     }
 
     // postId로 검색
     @GetMapping("/{postId}")
-    public String read(@PathVariable("postId") Long postId, Model model) {
+    public String read(Model model, @PathVariable("postId") Long postId, CommentDTO commentDTO) {
         PostDTO postDTO = this.postService.readPost(postId);
         List<CommentDTO> commentDTOs = this.commentService.getCommentsByPost(postId);
-        model.addAttribute("post", postDTO);
-        model.addAttribute("comments", commentDTOs);
+        model.addAttribute("postDTO", postDTO);
+        model.addAttribute("commentDTOs", commentDTOs);
         return "post/post_detail";
     }
 
     // create 요청페이지
     @GetMapping("/create")
-    public String create() {
+    public String create(PostDTO postDTO) {
         return "post/post_create";
     }
 
@@ -61,7 +62,10 @@ public class PostController {
     
     // create 응답
     @PostMapping("/create")
-    public String createPost(@ModelAttribute PostDTO postDTO, RedirectAttributes redirectAttributes) {
+    public String createPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            return "post/post_create";
+        }
         postService.createPost(postDTO);
         redirectAttributes.addFlashAttribute("message", "Post create 성공");
         return "redirect:/post/posts";
@@ -69,9 +73,9 @@ public class PostController {
 
     // update 요청페이지
     @GetMapping("/update/{postId}")
-    public String update(@PathVariable Long postId, Model model) {
+    public String update(Model model, @PathVariable Long postId) {
         PostDTO postDTO = postService.getPost(postId);
-        model.addAttribute("post", postDTO);
+        model.addAttribute("postDTO", postDTO);
         return "post/post_update";
     }
 

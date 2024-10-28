@@ -1,6 +1,8 @@
-<!-- <html layout:decorate="~{layout}"> -->
-    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+<html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container my-3" >
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
         <table class="table">
             <thead class="table-dark">
                 <tr>
@@ -12,38 +14,38 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="post, loop : ${posts}">
+                <tr th:each="postDTO, loop : ${postDTOs}">
                     <td>
-                    <a th:href="@{|/post/${post.postId}|}" th:text="${posts.getTotalElements - (posts.number * posts.size) - loop.index}"></a>
-                        {% comment %} <span class="text-danger small ms-2"
+                    <a th:href="@{|/post/${postDTO.postId}|}" th:text="${postDTOs.getTotalElements - (postDTOs.number * postDTOs.size) - loop.index}"></a>
+                        <!-- <span class="text-danger small ms-2"
                             th:if="${#lists.size(comments.answerList) > 0}" 
                             th:text="${#lists.size(comments.answerList)}">
-                        </span> {% endcomment %}
+                        </span>  -->
                     </td>
                     <td>
-                    <a th:href="@{|/post/${post.postId}|}" th:text="${post.title}"></a>
+                    <a th:href="@{|/post/${postDTO.postId}|}" th:text="${postDTO.title}"></a>
                     </td>
-                    <td th:text="${#temporals.format(post.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td th:text="${post.nickname}"></td>
-                    <td th:text="${post.viewCount}"></td>
+                    <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${postDTO.nickname}"></td>
+                    <td th:text="${postDTO.viewCount}"></td>
                 </tr>
             </tbody>
         </table>
         <!-- 페이징처리 시작 -->
-        <div th:if="${!posts.isEmpty()}">
+        <div th:if="${!postDTOs.isEmpty()}">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!posts.hasPrevious} ? 'disabled'">
-                    <a class="page-link" th:href="@{|?page=${posts.number-1}|}">
+                <li class="page-item" th:classappend="${!postDTOs.hasPrevious} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${postDTOs.number-1}|}">
                         <span>이전</span>
                     </a>
                 </li>
-                <li th:each="page: ${#numbers.sequence(0, posts.totalPages-1)}"
-                    th:if="${page >= posts.number-5 and page <= posts.number+5}"
-                    th:classappend="${page == posts.number} ? 'active'" class="page-item">
+                <li th:each="page: ${#numbers.sequence(0, postDTOs.totalPages-1)}"
+                    th:if="${page >= postDTOs.number-5 and page <= postDTOs.number+5}"
+                    th:classappend="${page == postDTOs.number} ? 'active'" class="page-item">
                     <a th:text="${page}" class="page-link" th:href="@{|?page=${page}|}"></a>
                 </li>
-                <li class="page-item" th:classappend="${!posts.hasNext} ? 'disabled'">
-                    <a class="page-link" th:href="@{|?page=${posts.number+1}|}">
+                <li class="page-item" th:classappend="${!postDTOs.hasNext} ? 'disabled'">
+                    <a class="page-link" th:href="@{|?page=${postDTOs.number+1}|}">
                         <span>다음</span>
                     </a>
                 </li>
@@ -52,4 +54,4 @@
         <!-- 페이징처리 끝 -->
         <a th:href="@{/post/create}" class="btn btn-primary">게시글 등록하기</a>
     </div>
-<!-- </html> -->
+</html>

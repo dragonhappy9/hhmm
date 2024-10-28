@@ -5,13 +5,17 @@ import java.time.LocalDateTime;
 
 import com.example.hhmm.Entity.Comment;
 
+import jakarta.validation.constraints.NotEmpty;
+
 @Data
 public class CommentDTO {
 
     private Long commentId;
 
+    @NotEmpty(message="댓글 내용은 필수항목입니다.")
     private String content;
 
+    @NotEmpty(message="닉네임은 필수항목입니다.")
     private String nickname;
 
     private LocalDateTime regDate;

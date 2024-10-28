@@ -1,37 +1,38 @@
-<!-- <html layout:decorate="~{layout}"> -->
-    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+<html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container my-3">
         <!-- 제목 -->
-        <h2 class="border-bottom py-2" th:text="${post.title}"></h2>
+        <h2 class="border-bottom py-2" th:text="${postDTO.title}"></h2>
         <div class="card my-3">
             <div class="card-body">
                 <!-- 내용 -->
-                <div class="card-text" style="white-space: pre-line;" th:text="${post.content}"></div>
+                <div class="card-text" style="white-space: pre-line;" th:text="${postDTO.content}"></div>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2 text-start">
-                        <div th:text="${#temporals.format(post.regDate, 'yyyy-MM-dd HH:mm')}"></div>
+                        <div th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></div>
                     </div>
                 </div>
             </div>
         </div>
         <hr>
         <!-- 답변 반복 시작 -->
-        <div class="card my-3" th:each="comment : ${comments}">
+        <div class="card my-3" th:each="commentDTO : ${commentDTOs}">
             <div class="card-body">
-                <div class="card-text" style="white-space: pre-line;" th:text="${comment.content}"></div>
+                <div class="card-text" style="white-space: pre-line;" th:text="${commentDTO.content}"></div>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2 text-start">
-                        <div th:text="${#temporals.format(comment.regDate, 'yyyy-MM-dd HH:mm')}"></div>
+                        <div th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></div>
                     </div>
                 </div>
             </div>
         </div>
         <!-- 답변 반복 끝  -->
         <!-- 답변 작성 -->
-        <form th:action="@{|/post/comments/create/${post.postId}|}" method="post" class="my-3">
-            <textarea name="content" id="content" rows="10" class="form-control"></textarea>
+        <form th:action="@{|/post/comments/create/${postDTO.postId}|}" th:object="${commentDTO}" method="post" class="my-3">
+            <!-- 에러 메시지 출력 -->
+            <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
+            <textarea th:field="*{content}" id="content" rows="10" class="form-control"></textarea>
             <input type="hidden" name="nickname" id="nickname" value="홍길동" required />
             <input type="submit" value="댓글 등록" class="btn btn-primary my-2">
         </form>
     </div>
-<!-- </html> -->
+</html>
