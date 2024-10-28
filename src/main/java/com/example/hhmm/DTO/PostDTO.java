@@ -32,10 +32,10 @@ public class PostDTO {
         this.title = post.getTitle();
         this.content = post.getContent();
         this.nickname = post.getNickname();
-        this.viewCount = post.getView_count();
+        this.viewCount = post.getViewCount();
         this.good = post.getGood();
         this.bad = post.getBad();
-        this.regDate = post.getReg_date();
+        this.regDate = post.getRegDate();
     }
 
 }

@@ -29,10 +29,10 @@ public class Post {
     private String content;
 
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime reg_date = LocalDateTime.now();
+    private LocalDateTime regDate = LocalDateTime.now();
 
     @Column(nullable = false)
-    private int view_count = 0;
+    private int viewCount = 0;
 
     @Column(nullable = false)
     private int good = 0;
@@ -42,7 +42,7 @@ public class Post {
 
     @PrePersist
     protected void onCreate() {
-        this.reg_date = LocalDateTime.now();
+        this.regDate = LocalDateTime.now();
     }
 
     public Post(){}

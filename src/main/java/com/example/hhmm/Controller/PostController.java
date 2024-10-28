@@ -2,8 +2,10 @@ package com.example.hhmm.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.data.domain.Page;
 
 import com.example.hhmm.DTO.PostDTO;
 import com.example.hhmm.DTO.CommentDTO;
@@ -29,8 +31,8 @@ public class PostController {
 
     // 모델 전체 불러오기
     @GetMapping("/posts")
-    public String posts(Model model) {
-        List<PostDTO> postDTOs = this.postService.getPostList();
+    public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page) {
+        Page<PostDTO> postDTOs = this.postService.getPostList(page);
         model.addAttribute("posts", postDTOs);
         return "post/posts";
     }

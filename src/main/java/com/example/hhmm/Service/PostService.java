@@ -1,16 +1,21 @@
 package com.example.hhmm.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.example.Exception.DataNotFoundException;
 import com.example.hhmm.DTO.PostDTO;
 import com.example.hhmm.Entity.Post;
 import com.example.hhmm.Repository.PostRepository;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.data.domain.Sort;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -20,11 +25,12 @@ public class PostService {
 
     // Post 목록 가져오기
     @Transactional(readOnly = true)
-    public List<PostDTO> getPostList() {
-        List<Post> posts = postRepository.findAll();
-        return posts.stream()
-                    .map(PostDTO::new) // 엔티티를 DTO로 변환
-                    .collect(Collectors.toList());
+    public Page<PostDTO> getPostList(int page) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("regDate"));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Page<Post> posts = postRepository.findAll(pageable);
+        return posts.map(PostDTO::new);
     }
 
     // Post 가져오기
@@ -45,8 +51,8 @@ public class PostService {
         post.setNickname(postDTO.getNickname());
         post.setGood(0);
         post.setBad(0);
-        post.setReg_date(LocalDateTime.now());
-        post.setView_count(0);
+        post.setRegDate(LocalDateTime.now());
+        post.setViewCount(0);
         this.postRepository.save(post);
     }
 
@@ -55,7 +61,7 @@ public class PostService {
     public PostDTO readPost(Long postId) {
         Post post = this.postRepository.findById(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
-        post.setView_count(post.getView_count() + 1);  // 조회수 증가
+        post.setViewCount(post.getViewCount() + 1);  // 조회수 증가
         PostDTO postDTO = new PostDTO(post);
         return postDTO;
     }
@@ -67,7 +73,7 @@ public class PostService {
                         .orElseThrow(() -> new DataNotFoundException("Post not found")); 
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
-        post.setReg_date(LocalDateTime.now());
+        post.setRegDate(LocalDateTime.now());
         this.postRepository.save(post);
     }
 

@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.example.hhmm.DTO.PostDTO;
 import com.example.hhmm.Entity.Comment;
 import com.example.hhmm.Entity.Post;
 import com.example.hhmm.Repository.CommentRepository;
 import com.example.hhmm.Repository.PostRepository;
+import com.example.hhmm.Service.PostService;
 
 import java.util.Optional;
 
@@ -19,14 +21,27 @@ class RepositoryTests {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private PostService postService;
     
     @Test
-    void testJPA(){
+    void createTestJPA(){
         Post post = new Post();
         post.setTitle("테스트 1번");
         post.setContent("테스트 1번");
         post.setNickname("홍길동");
         this.postRepository.save(post);
+    }
+
+    @Test
+    void create300PostJPA(){
+        for(int i = 2; i <=300; i++){
+            PostDTO postDTO = new PostDTO();
+            postDTO.setTitle(String.format("테스트 데이터 입니다:[%03d]", i));
+            postDTO.setContent("내용 없음!");
+            postDTO.setNickname("홍길동");
+            this.postService.createPost(postDTO);
+        }
     }
 
     @Test
