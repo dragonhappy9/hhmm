@@ -13,35 +13,36 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
-public class MyBucket {
+public class Bucket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bucketId;
 
     @OneToOne(mappedBy = "myBucket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Customer customer;
-
+    private Customer customer;      // Customer 안에 포함되었기 때문에 회원탈퇴시 
+                                    // 회원의 Bucket을 삭제하도록 설정
     @ManyToMany
-    @JoinTable(
-        name = "bucketItem", 
+    @JoinTable(                     // 테이블을 조인하여 연결 테이블을 만들었고,  
+        name = "bucketItem",        // 여러개의 Item이 여러개의 Bucket 안에 포함될 수 있도록 하였습니다.
         joinColumns = @JoinColumn(name = "bucketId"), 
         inverseJoinColumns = @JoinColumn(name = "itemId") 
     )
+
     private List<Item> itemList = new ArrayList<>();
 
-    public MyBucket() {}
-
-    // 아이템 삽입
     public void addItem(Item item){
         itemList.add(item);
     }
 
-    // 아이템 삭제
     public void removeItem(Item item){
         itemList.remove(item);
     }

@@ -1,11 +1,15 @@
 package com.example.hhmm.DTO;
 
-import lombok.Data;
+import com.example.hhmm.Entity.Item;
 
-@Data
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
 public class ItemDTO {
-    
-    private Long itemId;
 
     private String itemName;
 
@@ -13,4 +17,9 @@ public class ItemDTO {
 
     private Integer quantity;
 
+    public ItemDTO(Item item){
+        this.itemName = item.getItemName();
+        this.price = item.getPrice();
+        this.quantity = item.getPrice();
+    }
 }
