@@ -1,4 +1,4 @@
-package com.example.hhmm.Controller;
+package com.example.hhmm.Item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -10,11 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestParam;
 // import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.hhmm.DTO.ItemDTO;
-import com.example.hhmm.Entity.Item;
-import com.example.hhmm.Repository.ItemRepository;
-import com.example.hhmm.Service.ItemService;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.example.hhmm.Entity;
+package com.example.hhmm.Item;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-import com.example.hhmm.DTO.ItemDTO;
+import com.example.hhmm.Bucket.Bucket;
 
 import java.util.ArrayList;
 

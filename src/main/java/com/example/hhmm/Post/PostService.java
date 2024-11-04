@@ -1,4 +1,4 @@
-package com.example.hhmm.Service;
+package com.example.hhmm.Post;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.example.Exception.DataNotFoundException;
-import com.example.hhmm.DTO.PostDTO;
-import com.example.hhmm.Entity.Post;
-import com.example.hhmm.Repository.PostRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.domain.Sort;
@@ -45,21 +43,14 @@ public class PostService {
     // Post Create
     @Transactional
     public void createPost(PostDTO postDTO){
-        Post post = new Post();
-        post.setTitle(postDTO.getTitle());
-        post.setContent(postDTO.getContent());
-        post.setNickname(postDTO.getNickname());
-        post.setGood(0);
-        post.setBad(0);
-        post.setRegDate(LocalDateTime.now());
-        post.setViewCount(0);
+        Post post = new Post(postDTO);
         this.postRepository.save(post);
     }
 
     // Post Read
     @Transactional
     public PostDTO readPost(Long postId) {
-        Post post = this.postRepository.findById(postId)
+        Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         post.setViewCount(post.getViewCount() + 1);  // 조회수 증가
         PostDTO postDTO = new PostDTO(post);
@@ -73,7 +64,7 @@ public class PostService {
                         .orElseThrow(() -> new DataNotFoundException("Post not found")); 
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
-        post.setRegDate(LocalDateTime.now());
+        post.setUpdateDate(LocalDateTime.now());
         this.postRepository.save(post);
     }
 

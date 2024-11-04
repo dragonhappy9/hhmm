@@ -1,7 +1,6 @@
-package com.example.hhmm.DTO;
+package com.example.hhmm.Item;
 
-import com.example.hhmm.Entity.Item;
-
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,8 +10,10 @@ import lombok.Setter;
 @Setter
 public class ItemDTO {
 
+    @NotEmpty(message = "상품명은 필수항목입니다.")
     private String itemName;
 
+    @NotEmpty(message = "가격은 필수항목입니다.")
     private Integer price;
 
     private Integer quantity;

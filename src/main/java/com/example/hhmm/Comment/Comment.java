@@ -1,8 +1,6 @@
-package com.example.hhmm.Entity;
+package com.example.hhmm.Comment;
 
 import java.time.LocalDateTime;
-
-import com.example.hhmm.DTO.CommentDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,13 +31,16 @@ public class Comment {
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime regDate;
 
+    @Column(nullable = true)
+    private LocalDateTime updateDate;
+
     @Column(nullable = false)
     private int good;
 
     @Column(nullable = false)
     private int bad;
 
-    @Column(name = "postId", nullable = false)
+    @Column(name = "post_id", nullable = false)
     private Long postId;
 
     @PrePersist
@@ -47,13 +48,14 @@ public class Comment {
         if (this.regDate == null) {
             this.regDate = LocalDateTime.now();
         }
+        this.updateDate = null;
         this.good = 0;
         this.bad = 0;
     }
 
     public Comment(CommentDTO commentDTO){
-        this.content = commentDTO.getContent();
         this.nickname = commentDTO.getNickname();
+        this.content = commentDTO.getContent();
         this.postId = commentDTO.getPostId();
     }
 }

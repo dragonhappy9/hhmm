@@ -1,7 +1,7 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container">
         <h5 class="my-3 border-bottom pb-2">질문등록</h5>
-        <form th:action="@{/post/create}" th:object="${postDTO}" method="post">
+        <form th:action="@{/posts}" th:object="${postDTO}" method="post">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
             <div class="mb-3">

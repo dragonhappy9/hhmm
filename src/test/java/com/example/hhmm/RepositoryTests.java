@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.hhmm.DTO.PostDTO;
-import com.example.hhmm.Entity.Comment;
-import com.example.hhmm.Entity.Post;
-import com.example.hhmm.Repository.CommentRepository;
-import com.example.hhmm.Repository.PostRepository;
-import com.example.hhmm.Service.PostService;
+import com.example.hhmm.Comment.Comment;
+import com.example.hhmm.Comment.CommentRepository;
+import com.example.hhmm.Post.Post;
+import com.example.hhmm.Post.PostDTO;
+import com.example.hhmm.Post.PostRepository;
+import com.example.hhmm.Post.PostService;
 
 import java.util.Optional;
 

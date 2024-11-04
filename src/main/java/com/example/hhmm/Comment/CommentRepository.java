@@ -1,8 +1,6 @@
-package com.example.hhmm.Repository;
+package com.example.hhmm.Comment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import com.example.hhmm.Entity.Comment;
 
 import java.util.List;
 
