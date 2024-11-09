@@ -13,8 +13,6 @@ import lombok.Setter;
 public class CommentDTO {
 
     private Long commentId;
-
-    @NotEmpty(message="닉네임은 필수항목입니다.")
     private String nickname;
 
     @NotEmpty(message="댓글 내용은 필수항목입니다.")
@@ -27,6 +25,7 @@ public class CommentDTO {
     private Long postId;
 
     public CommentDTO(Comment comment) {    
+        this.commentId = comment.getCommentId();
         this.nickname = comment.getNickname();
         this.content = comment.getContent();
         this.regDate = comment.getRegDate();

@@ -9,9 +9,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.example.Exception.DataNotFoundException;
+import com.example.hhmm.Comment.CommentDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Sort;
 
 import lombok.RequiredArgsConstructor;
@@ -34,9 +37,12 @@ public class PostService {
     // Post 가져오기
     @Transactional(readOnly = true)
     public PostDTO getPost(Long postId){
-        Post post = this.postRepository.findById(postId)
+        Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         PostDTO postDTO = new PostDTO(post);
+        postDTO.setCommentDTOs(post.getComments().stream()
+                              .map(CommentDTO::new)
+                              .collect(Collectors.toList()));
         return postDTO;
     }
 
@@ -54,6 +60,9 @@ public class PostService {
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         post.setViewCount(post.getViewCount() + 1);  // 조회수 증가
         PostDTO postDTO = new PostDTO(post);
+        postDTO.setCommentDTOs(post.getComments().stream()
+                              .map(CommentDTO::new)
+                              .collect(Collectors.toList()));
         return postDTO;
     }
 
@@ -68,9 +77,8 @@ public class PostService {
         this.postRepository.save(post);
     }
 
-    // Post Delete
     @Transactional
-    public void deletePost(Long postId){
-        this.postRepository.delete(this.postRepository.findById(postId).get());;
+    public void deletePost(Long postId) {
+        this.postRepository.deleteById(postId);
     }
 }

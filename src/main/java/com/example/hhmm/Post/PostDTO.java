@@ -2,7 +2,6 @@ package com.example.hhmm.Post;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.example.hhmm.Comment.CommentDTO;
 
@@ -19,7 +18,6 @@ public class PostDTO {
 
     private Long postId;
 
-    @NotEmpty(message="닉네임은 필수항목입니다.")
     private String nickname;
 
     @NotEmpty(message="게시글 제목은 필수항목입니다.")
@@ -43,11 +41,5 @@ public class PostDTO {
         this.content = post.getContent();
         this.regDate = post.getRegDate();
         this.updateDate = post.getUpdateDate();
-        this.viewCount = post.getViewCount();
-        this.good = post.getGood();
-        this.bad = post.getBad();
-        this.commentDTOs = post.getComments().stream()
-                             .map(CommentDTO::new)
-                             .collect(Collectors.toList());
     }
 }

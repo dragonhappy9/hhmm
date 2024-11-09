@@ -3,6 +3,8 @@ package com.example.hhmm.Comment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.Exception.DataNotFoundException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +26,14 @@ public class CommentService {
             .collect(Collectors.toList());
     }
 
+    // get Comment
+    @Transactional(readOnly = true)
+    public CommentDTO getComment(Long commentId){
+        Comment comment = this.commentRepository.findById(commentId)
+                                .orElseThrow(() -> new DataNotFoundException("Comment not found"));
+        return new CommentDTO(comment);
+    }
+
     // Comment Create 
     @Transactional
     public void createComment(Long postId, CommentDTO commentDTO) {
@@ -34,9 +44,10 @@ public class CommentService {
     // Comment Update
     @Transactional
     public void updateComment(Long commentId, CommentDTO commentDTO){
-        Comment comment = this.commentRepository.findById(commentId).get();
+        Comment comment = this.commentRepository.findById(commentId)
+                                .orElseThrow(() -> new DataNotFoundException("Comment not found"));
         comment.setContent(commentDTO.getContent());
-        comment.setRegDate(LocalDateTime.now());
+        comment.setUpdateDate(LocalDateTime.now());
         this.commentRepository.save(comment);
     }
 

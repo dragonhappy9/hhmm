@@ -5,24 +5,22 @@
         </div>
         <table class="table">
             <thead class="table-dark">
-                <tr>
+                <tr class="text-center">
                     <th>포스트 번호</th>
-                    <th>제목</th>
+                    <th style="width:50%; text-align:left;">제목</th>
                     <th>작성 일시</th>
                     <th>작성자</th>
                     <th>조회수</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="postDTO, loop : ${postDTOs}">
-                    <td>
-                        <a th:href="@{|/posts/${postDTO.postId}|}" th:text="${postDTOs.getTotalElements() - (postDTOs.number * postDTOs.size) - loop.index}"></a>
-                    </td>
-                    <td>
+                <tr class="text-center" th:each="postDTO, loop : ${postDTOs}">
+                    <td th:href="@{|/posts/${postDTO.postId}|}" th:text="${postDTOs.getTotalElements() - (postDTOs.number * postDTOs.size) - loop.index}"></td>
+                    <td class="text-start">
                         <a th:href="@{|/posts/${postDTO.postId}|}" th:text="${postDTO.title}"></a>
                     </td>
                     <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td th:text="${postDTO.nickname}"></td>
+                    <td th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></td>
                     <td th:text="${postDTO.viewCount}"></td>
                 </tr>
             </tbody>

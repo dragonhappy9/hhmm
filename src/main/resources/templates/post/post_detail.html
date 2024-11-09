@@ -1,5 +1,8 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container my-3">
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
         <!-- 제목 -->
         <h2 class="border-bottom py-2" th:text="${postDTO.title}"></h2>
         <div class="card my-3">
@@ -8,8 +11,23 @@
                 <div class="card-text" style="white-space: pre-line;" th:text="${postDTO.content}"></div>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2 text-start">
+                        <div class="mb-2">
+                            <span th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></span>
+                        </div>
                         <div th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></div>
                     </div>
+                </div>
+                <div class="my-3">
+                    <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm btn-outline-secondary"
+                        sec:authorize="isAuthenticated()"
+                        th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}"
+                        th:text="수정"></a>
+                    <form th:action="@{|/posts/${postDTO.postId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()"
+                        th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}">
+                        <input type="hidden" name="_method" value="delete" />
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">삭제</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -17,11 +35,36 @@
         <!-- 답변 반복 시작 -->
         <div class="card my-3" th:each="commentDTO : ${postDTO.commentDTOs}">
             <div class="card-body">
-                <div class="card-text" style="white-space: pre-line;" th:text="${commentDTO.content}"></div>
+                <input class="card-text" style="border-width: 0; background-color: white;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2 text-start">
+                        <div class="mb-2">
+                            <span th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></span>
+                        </div>
                         <div th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></div>
                     </div>
+                </div>
+                <div class="my-3 d-flex" >
+                    <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline; margin-right: 5px;" sec:authorize="isAuthenticated()">
+                        <input type="hidden" name="_method" value="patch" />
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <input type="hidden" th:id="'copy-comment-content-' + ${commentDTO.commentId}" name="content" />
+
+                        <div class="my-3" th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
+                            <button type="button" class="btn btn-sm btn-outline-secondary" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
+                        </div>
+                    </form>
+                    <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
+                        <input type="hidden" name="_method" value="delete" />
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        
+                        <div class="my-3">
+                            <div class="my-3" th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">삭제</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -30,9 +73,29 @@
         <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post" class="my-3">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-            <textarea th:field="*{content}" id="content" rows="10" class="form-control"></textarea>
-            <input type="hidden" name="nickname" id="nickname" value="홍길동" required />
+            <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control" rows="10"></textarea>
+            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
             <input type="submit" value="댓글 등록" class="btn btn-primary my-2">
         </form>
     </div>
+    <script layout:fragment="script" type='text/javascript'>
+        function editComment(commentId) {
+            const comment_input = document.getElementById(`comment-content-`+ commentId);
+            const edit_button = document.getElementById(`edit-comment-button-` + commentId);
+            const save_button = document.getElementById(`save-comment-button-` + commentId);
+
+            if (comment_input.disabled) {
+                comment_input.disabled = false;
+                edit_button.classList.add('d-none');
+                save_button.classList.remove('d-none');
+            }
+        }
+        
+        function copyInput(commentId){
+            const comment_input = document.getElementById(`comment-content-` + commentId);
+            const copy_input = document.getElementById(`copy-comment-content-` + commentId);
+            
+            copy_input.value = comment_input.value;
+        }
+    </script>
 </html>

@@ -1,7 +1,10 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container">
-        <h5 class="my-3 border-bottom pb-2">게시글 등록</h5>
-        <form th:action="@{/posts}" th:object="${postDTO}" method="post">
+        <h5 class="my-3 border-bottom pb-2">게시글 수정</h5>
+        <form th:object="${postDTO}" method="post" th:action="@{/posts/{postId}(postId=${postDTO.postId})}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <!-- 업데이트 요청시 사용됨 -->
+            <input type="hidden" name="_method" value="patch" />
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
             <div class="mb-3">

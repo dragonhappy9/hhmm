@@ -54,8 +54,8 @@ public class Post {
     @Column(nullable = false)
     private int bad;
 
-    // 부모 Entity가 삭제될 시 자동으로 자식 Entity를 삭제해주게 옵션설정하고, Post를 읽어올때 Comment들도 읽어오도록 변경
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)     
+    // 부모 Entity의 삭제 영속성을 상속하여 자동으로 자식 Entity를 삭제, Post를 읽어올때 Comment들도 읽어오도록 변경
+    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)     
     @JoinColumn(name = "post_id")
     private List<Comment> comments = new ArrayList<>();
 
@@ -64,7 +64,7 @@ public class Post {
         if (this.regDate == null) {
             this.regDate = LocalDateTime.now();     // Post가 생성될 때 현재 시간을 저장
         }
-        this.updateDate = null;
+        this.updateDate = null;                     // 수정 시간을 포함시킴
         this.viewCount = 0;
         this.good = 0;
         this.bad = 0;

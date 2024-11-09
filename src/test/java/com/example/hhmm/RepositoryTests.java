@@ -11,6 +11,7 @@ import com.example.hhmm.Post.PostDTO;
 import com.example.hhmm.Post.PostRepository;
 import com.example.hhmm.Post.PostService;
 
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -54,6 +55,13 @@ class RepositoryTests {
             comment.setPostId(post.get().getPostId());
             this.commentRepository.save(comment);
         }
+    }
+
+    @Test
+    void deleteJPA(){
+        List<Comment> comments = this.commentRepository.findByPostId(this.postRepository.findById(2L).get().getPostId());
+        this.commentRepository.deleteAll(comments);
+        this.postRepository.delete(this.postRepository.findById(2L).get());
     }
 
 }

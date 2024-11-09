@@ -40,7 +40,7 @@ public class Comment {
     @Column(nullable = false)
     private int bad;
 
-    @Column(name = "post_id", nullable = false)
+    @Column(name = "post_id", nullable = true)
     private Long postId;
 
     @PrePersist
