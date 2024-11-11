@@ -30,8 +30,7 @@ public class PostDTO {
     private LocalDateTime regDate;
     private LocalDateTime updateDate;
     private int viewCount;
-    private int good;   
-    private int bad;
+    private int starpoint;
     private List<CommentDTO> commentDTOs;
 
     public PostDTO(Post post) {

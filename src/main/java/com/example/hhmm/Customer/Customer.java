@@ -42,7 +42,7 @@ public class Customer {
     @Column(length = 50, nullable = false)
     private String home;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "bucket_id")
     private Bucket bucket;      // 하나의 Customer는 하나의 Bucket을 가지는 관계
 

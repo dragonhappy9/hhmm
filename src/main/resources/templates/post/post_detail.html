@@ -10,17 +10,19 @@
                 <!-- 내용 -->
                 <div class="card-text" style="white-space: pre-line;" th:text="${postDTO.content}"></div>
                 <div class="d-flex justify-content-end">
-                    <div class="badge bg-light text-dark p-2 text-start">
-                        <table>
-                            <tr>
-                                <td class="text-end py-1">작성자&nbsp;:&nbsp;</td>
-                                <td th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></td>
-                            </tr>
-                            <tr>
-                                <td>작성시간&nbsp;:&nbsp;</td>
-                                <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                            </tr>
-                        </table>
+                    <div class="badge bg-light text-dark text-start">
+                        <div class="d-flex align-items-center">
+                            <table>
+                                <tr>
+                                    <td class="text-end py-2">판매자&nbsp;:</td>
+                                    <td th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end py-2">등록시간&nbsp;:</td>
+                                    <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="my-3">
@@ -44,10 +46,16 @@
                 <input class="card-text" style="border-width: 0; background-color: white;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark p-2 text-start">
-                        <div class="mb-2">
-                            <span th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></span>
-                        </div>
-                        <div th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></div>
+                        <table>
+                            <tr>
+                                <td class="text-end py-1">작성자&nbsp;:&nbsp;</td>
+                                <td th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></td>
+                            </tr>
+                            <tr>
+                                <td>작성시간&nbsp;:&nbsp;</td>
+                                <td th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <div class="my-3 d-flex" >
@@ -81,7 +89,7 @@
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
             <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control" rows="10"></textarea>
             <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
-            <input type="submit" value="댓글 등록" class="btn btn-primary my-2">
+            <input type="submit" value="후기 등록" class="btn btn-primary my-2">
         </form>
     </div>
     <script layout:fragment="script" type='text/javascript'>
