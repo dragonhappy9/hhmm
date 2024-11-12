@@ -20,8 +20,7 @@ public class CommentDTO {
 
     private LocalDateTime regDate;
     private LocalDateTime updateDate;
-    private int good;   
-    private int bad;
+    private float starpoint;
     private Long postId;
 
     public CommentDTO(Comment comment) {    
@@ -30,8 +29,7 @@ public class CommentDTO {
         this.content = comment.getContent();
         this.regDate = comment.getRegDate();
         this.updateDate = comment.getUpdateDate();
-        this.good = comment.getGood();
-        this.bad = comment.getBad();
+        this.starpoint = comment.getStarpoint();
         this.postId = comment.getPostId();
     }
 }

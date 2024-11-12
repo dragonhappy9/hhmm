@@ -47,9 +47,10 @@ public class CommentController {
         String nickname = userDetails.getNickname();
 
         commentDTO.setNickname(nickname);
-        commentService.createComment(postId, commentDTO);
+        commentDTO = commentService.createComment(postId, commentDTO);
+        
         redirectAttributes.addFlashAttribute("message", "Comment create 성공");
-        return "redirect:/posts/" + postId;
+        return "redirect:/posts/" + postId +"#commentDTO_" + commentDTO.getCommentId();
     }
     
     // Post 수정 요청

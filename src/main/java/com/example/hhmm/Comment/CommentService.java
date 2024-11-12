@@ -36,9 +36,10 @@ public class CommentService {
 
     // Comment Create 
     @Transactional
-    public void createComment(Long postId, CommentDTO commentDTO) {
+    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
         Comment comment = new Comment(commentDTO);
         commentRepository.save(comment);
+        return new CommentDTO(comment);
     }
 
     // Comment Update

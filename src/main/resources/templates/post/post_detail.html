@@ -8,18 +8,39 @@
         <div class="card my-3">
             <div class="card-body">
                 <!-- 내용 -->
-                <div class="card-text" style="white-space: pre-line;" th:text="${postDTO.content}"></div>
+                <div class="card-text" th:utext="${@commonUtil.markdown(postDTO.content)}"></div>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark text-start">
                         <div class="d-flex align-items-center">
                             <table>
                                 <tr>
-                                    <td class="text-end py-2">판매자&nbsp;:</td>
+                                    <td class="text-start py-2">판매자</td>
+                                    <td>&nbsp;:&nbsp;</td>
                                     <td th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></td>
                                 </tr>
                                 <tr>
-                                    <td class="text-end py-2">등록시간&nbsp;:</td>
+                                    <td class="text-start py-2">등록시간</td>
+                                    <td>&nbsp;:&nbsp;</td>
                                     <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                </tr>
+                                <tr th:if="${postDTO.updateDate != null}">
+                                    <td class="text-start py-2">수정시간</td>
+                                    <td>&nbsp;:&nbsp;</td>
+                                    <td th:text="${#temporals.format(postDTO.updateDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-start py-2">별점</td>
+                                    <td>&nbsp;:&nbsp;</td>
+                                    <td id="starpoint" th:value="${postDTO.starpoint}">
+                                        <div id="star-rating" class="star-rating">
+                                            <div class="star"></div>
+                                            <div class="star"></div>
+                                            <div class="star"></div>
+                                            <div class="star"></div>
+                                            <div class="star"></div>
+                                        </div>
+                                        <span id="selected-rating"></span>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -42,20 +63,27 @@
         <hr>
         <!-- 답변 반복 시작 -->
         <div class="card my-3" th:each="commentDTO : ${postDTO.commentDTOs}">
+            <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <input class="card-text" style="border-width: 0; background-color: white;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
                 <div class="d-flex justify-content-end">
-                    <div class="badge bg-light text-dark p-2 text-start">
-                        <table>
-                            <tr>
-                                <td class="text-end py-1">작성자&nbsp;:&nbsp;</td>
-                                <td th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></td>
-                            </tr>
-                            <tr>
-                                <td>작성시간&nbsp;:&nbsp;</td>
-                                <td th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                            </tr>
-                        </table>
+                    <div class="badge bg-light text-dark text-start">
+                        <div class="d-flex align-items-center">
+                            <table>
+                                <tr>
+                                    <td class="text-start py-2">작성자:&nbsp;</td>
+                                    <td th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end py-2">등록시간:&nbsp;</td>
+                                    <td th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                </tr>
+                                <tr th:if="${commentDTO.updateDate != null}">
+                                    <td class="text-end py-2">수정시간:&nbsp;</td>
+                                    <td th:text="${#temporals.format(commentDTO.updateDate, 'yyyy-MM-dd HH:mm')}"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="my-3 d-flex" >
@@ -111,5 +139,31 @@
             
             copy_input.value = comment_input.value;
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const starRating = document.getElementById('star-rating');
+            const starpoint = document.getElementById('starpoint');
+            const stars = starRating.getElementsByClassName('star');
+
+            const totalStars = 5;
+            const fullStars = Math.floor(starpoint);  // 정수 부분 (완전한 별)
+            const decimalPart = starpoint - fullStars;  // 소수점 부분 (퍼센트로 계산)
+
+            // 완전한 별 채우기
+            for (let i = 0; i < fullStars; i++) {
+                stars[i].style.background = 'gold';  // 완전히 금색으로 채움
+            }
+
+            // 소수점 부분이 있는 경우, 해당 별을 부분적으로 채우기
+            if (decimalPart > 0) {
+                const partialStar = stars[fullStars];
+                partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;  // 소수점만큼 채움
+            }
+
+            // 빈 별은 기본 회색 상태로 유지
+            for (let i = fullStars + (decimalPart > 0 ? 1 : 0); i < totalStars; i++) {
+                stars[i].style.background = '#d3d3d3';  // 빈 별 (회색)
+            }
+        });
     </script>
 </html>

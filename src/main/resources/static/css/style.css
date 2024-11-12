@@ -5,3 +5,25 @@
 input[type=submit] {
     margin-top:10px;
 } */
+
+.star-rating {
+    display: flex;
+    justify-content: left;
+    gap: 5px;
+}
+
+.star {
+    width: 15px;
+    height: 15px;
+    background-color: #d3d3d3; /* 기본 색 (빈 별) */
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); /* 별 모양 */
+    transition: background-color 0.3s ease;
+}
+
+.star.filled {
+    background-color: gold;  /* 채워진 별 색상 */
+}
+
+.star.half {
+    background: linear-gradient(to right, gold 50%, #d3d3d3 50%);  /* 반 별 효과 */
+}

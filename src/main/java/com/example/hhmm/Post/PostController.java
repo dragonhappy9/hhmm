@@ -33,9 +33,10 @@ public class PostController {
     private final PostService postService;
     // Post 전체 불러오기
     @GetMapping
-    public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page) {
-        Page<PostDTO> postDTOs = this.postService.getPostList(page);
+    public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
+        Page<PostDTO> postDTOs = this.postService.getPostList(page, kw);
         model.addAttribute("postDTOs", postDTOs);
+        model.addAttribute("kw", kw);
         return "post/posts";
     }
 

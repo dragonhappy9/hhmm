@@ -9,13 +9,25 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.example.Exception.DataNotFoundException;
+import com.example.hhmm.Comment.Comment;
 import com.example.hhmm.Comment.CommentDTO;
+
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,13 +36,33 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
     private final PostRepository postRepository;
 
+    private Specification<Post> search(String kw) {
+        return new Specification<>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Predicate toPredicate(@NonNull Root<Post> q, @Nullable CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
+                if (query != null) {
+                    query.distinct(true);  // query가 null이 아닐 때만 중복 제거 설정
+                }
+                Join<Post, Comment> a = q.join("comments", JoinType.LEFT);
+
+                return cb.or(cb.like(q.get("title"), "%" + kw + "%"), // 제목 
+                        cb.like(q.get("content"), "%" + kw + "%"),      // 내용 
+                        cb.like(q.get("nickname"), "%" + kw + "%"),    // 질문 작성자 
+                        cb.like(a.get("content"), "%" + kw + "%"),      // 답변 내용 
+                        cb.like(a.get("nickname"), "%" + kw + "%"));   // 답변 작성자 
+            }
+        };
+    }
+
     // Post 목록 가져오기
     @Transactional(readOnly = true)
-    public Page<PostDTO> getPostList(int page) {
+    public Page<PostDTO> getPostList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("regDate"));
         Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
-        Page<Post> posts = postRepository.findAll(pageable);
+        Specification<Post> spec = search(kw);
+        Page<Post> posts = postRepository.findAll(spec, pageable);
         return posts.map(PostDTO::new);
     }
 

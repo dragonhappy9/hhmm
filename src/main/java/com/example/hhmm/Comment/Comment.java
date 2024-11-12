@@ -35,10 +35,7 @@ public class Comment {
     private LocalDateTime updateDate;
 
     @Column(nullable = false)
-    private int good;
-
-    @Column(nullable = false)
-    private int bad;
+    private float starpoint;
 
     @Column(name = "post_id", nullable = true)
     private Long postId;
@@ -49,8 +46,7 @@ public class Comment {
             this.regDate = LocalDateTime.now();
         }
         this.updateDate = null;
-        this.good = 0;
-        this.bad = 0;
+        this.starpoint = 0;
     }
 
     public Comment(CommentDTO commentDTO){

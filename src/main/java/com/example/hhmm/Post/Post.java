@@ -49,7 +49,7 @@ public class Post {
     private int viewCount;
 
     @Column(nullable = false)
-    private int starpoint;
+    private float starpoint;
 
     @Column(nullable = true)
     private String imgUrl;
