@@ -40,7 +40,7 @@
         <div th:if="${!postDTOs.isEmpty()}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!postDTOs.hasPrevious} ? 'disabled'">
-                    <a class="page-link" href="javascript:void(0)" th:data-page="${postDTOs.number-1}">>
+                    <a class="page-link" href="javascript:void(0)" th:data-page="${postDTOs.number-1}">
                         <span>이전</span>
                     </a>
                 </li>

@@ -31,15 +31,14 @@
                                 <tr>
                                     <td class="text-start py-2">별점</td>
                                     <td>&nbsp;:&nbsp;</td>
-                                    <td id="starpoint" th:value="${postDTO.starpoint}">
-                                        <div id="star-rating" class="star-rating">
+                                    <td>
+                                        <div id="post-starpoint" class="starpoint" th:data-post-starpoint="${postDTO.starpoint}">
                                             <div class="star"></div>
                                             <div class="star"></div>
                                             <div class="star"></div>
                                             <div class="star"></div>
                                             <div class="star"></div>
                                         </div>
-                                        <span id="selected-rating"></span>
                                     </td>
                                 </tr>
                             </table>
@@ -65,28 +64,44 @@
         <div class="card my-3" th:each="commentDTO : ${postDTO.commentDTOs}">
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
+                <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
                 <input class="card-text" style="border-width: 0; background-color: white;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark text-start">
-                        <div class="d-flex align-items-center">
-                            <table>
-                                <tr>
-                                    <td class="text-start py-2">작성자:&nbsp;</td>
-                                    <td th:if="${commentDTO.nickname != null}" th:text="${commentDTO.nickname}"></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-end py-2">등록시간:&nbsp;</td>
-                                    <td th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                                </tr>
-                                <tr th:if="${commentDTO.updateDate != null}">
-                                    <td class="text-end py-2">수정시간:&nbsp;</td>
-                                    <td th:text="${#temporals.format(commentDTO.updateDate, 'yyyy-MM-dd HH:mm')}"></td>
-                                </tr>
-                            </table>
-                        </div>
+                        <table>
+                            <tr>
+                                <td class="text-start py-2">작성자</td>
+                                <td>&nbsp;:&nbsp;</td>
+                                <td th:text="${commentDTO.nickname}"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-end py-2">등록시간</td>
+                                <td>&nbsp;:&nbsp;</td>
+                                <td th:text="${#temporals.format(commentDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            </tr>
+                            <tr th:if="${commentDTO.updateDate != null}">
+                                <td class="text-end py-2">수정시간</td>
+                                <td>&nbsp;:&nbsp;</td>
+                                <td th:text="${#temporals.format(commentDTO.updateDate, 'yyyy-MM-dd HH:mm')}"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-start py-2">별점</td>
+                                <td>&nbsp;:&nbsp;</td>
+                                <td>
+                                    <div th:id="'starpoint-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}" >
+                                        <div class="star" data-value="1"></div>
+                                        <div class="star" data-value="2"></div>
+                                        <div class="star" data-value="3"></div>
+                                        <div class="star" data-value="4"></div>
+                                        <div class="star" data-value="5"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <div class="my-3 d-flex" >
+                    <!-- 수정 폼 -->
                     <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline; margin-right: 5px;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="patch" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -95,8 +110,10 @@
                         <div class="my-3" th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
                             <button type="button" class="btn btn-sm btn-outline-secondary" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
                             <button type="submit" class="btn btn-sm btn-outline-secondary d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
+                            <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.commentId}" name="starpoint"></input>
                         </div>
                     </form>
+                    <!-- 수정_process 폼 -->
                     <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="delete" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -110,21 +127,34 @@
                 </div>
             </div>
         </div>
+        <hr>
         <!-- 답변 반복 끝  -->
         <!-- 답변 작성 -->
         <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post" class="my-3">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-            <textarea sec:authorize="isAnonymous()" disabled th:field="*{content}" class="form-control" rows="10"></textarea>
+            <div id="starpoint" class="starpoint mb-3" >
+                <div class="star" data-value="1"></div>
+                <div class="star" data-value="2"></div>
+                <div class="star" data-value="3"></div>
+                <div class="star" data-value="4"></div>
+                <div class="star" data-value="5"></div>
+            </div>
+            <textarea sec:authorize="isAnonymous()" th:field="*{content}" class="form-control" rows="10" disabled></textarea>
+            <input type="hidden" name="starpoint" id="comment-starpoint">
             <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
             <input type="submit" value="후기 등록" class="btn btn-primary my-2">
         </form>
     </div>
+
+    <!-- sec:authorize="isAuthenticated()" -->
     <script layout:fragment="script" type='text/javascript'>
+        
+        // 수정하기 버튼 메소드
         function editComment(commentId) {
-            const comment_input = document.getElementById(`comment-content-`+ commentId);
-            const edit_button = document.getElementById(`edit-comment-button-` + commentId);
-            const save_button = document.getElementById(`save-comment-button-` + commentId);
+            const comment_input = document.getElementById('comment-content-'+ commentId);
+            const edit_button = document.getElementById('edit-comment-button-' + commentId);
+            const save_button = document.getElementById('save-comment-button-' + commentId);
 
             if (comment_input.disabled) {
                 comment_input.disabled = false;
@@ -133,37 +163,128 @@
             }
         }
         
+        // 후기 전송전 호출되는 메소드
         function copyInput(commentId){
-            const comment_input = document.getElementById(`comment-content-` + commentId);
-            const copy_input = document.getElementById(`copy-comment-content-` + commentId);
+            const comment_input = document.getElementById('comment-content-' + commentId);
+            const copy_input = document.getElementById('copy-comment-content-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const edit_starpoint = document.getElementById('edit-starpoint-' + commentId);
             
             copy_input.value = comment_input.value;
+            edit_starpoint.value = starpointDiv.value;
         }
 
+        // post 별점 표시
         document.addEventListener("DOMContentLoaded", function() {
-            const starRating = document.getElementById('star-rating');
-            const starpoint = document.getElementById('starpoint');
-            const stars = starRating.getElementsByClassName('star');
+            const starpointElement = document.querySelector('#post-starpoint'); // id가 post-starpoint인 Element를 가져옴
+            const starpoint = starpointElement.dataset.postStarpoint;
+            const stars = starpointElement.getElementsByClassName('star');
 
             const totalStars = 5;
-            const fullStars = Math.floor(starpoint);  // 정수 부분 (완전한 별)
-            const decimalPart = starpoint - fullStars;  // 소수점 부분 (퍼센트로 계산)
+            const fullStars = Math.floor(starpoint);
+            const decimalPart = starpoint - fullStars;
 
-            // 완전한 별 채우기
             for (let i = 0; i < fullStars; i++) {
-                stars[i].style.background = 'gold';  // 완전히 금색으로 채움
+                stars[i].style.background = 'gold';
             }
 
-            // 소수점 부분이 있는 경우, 해당 별을 부분적으로 채우기
+            // 별점의 별을 퍼센테이지로 채우기
             if (decimalPart > 0) {
                 const partialStar = stars[fullStars];
-                partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;  // 소수점만큼 채움
+                partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;
             }
 
-            // 빈 별은 기본 회색 상태로 유지
             for (let i = fullStars + (decimalPart > 0 ? 1 : 0); i < totalStars; i++) {
-                stars[i].style.background = '#d3d3d3';  // 빈 별 (회색)
+                stars[i].style.background = '#d3d3d3';
             }
+        });
+
+        // comment 별점 추가
+        document.addEventListener("DOMContentLoaded", function() {
+            const starpointElement = document.getElementById('starpoint');
+            const stars = starpointElement.getElementsByClassName('star');
+            const starpointComment = document.getElementById('comment-starpoint');
+
+            function setRating(starpoint) {
+                for (let i = 0; i < stars.length; i++) {
+                    const starValue = parseInt(stars[i].dataset.value);
+                    if (starValue <= Math.floor(starpoint)) {
+                        stars[i].style.background = 'gold';
+                    } else if (starValue === Math.ceil(starpoint)) {
+                        const percentage = (starpoint % 1) * 100;
+                        stars[i].style.background = `linear-gradient(to right, gold ${percentage}%, #d3d3d3 ${percentage}%)`;
+                    } else {
+                        stars[i].style.background = '#d3d3d3';
+                    }
+                }
+            }
+                
+            // 이벤트 사용 조건 넣기(시간나면)
+
+            // 각 별에 클릭 이벤트 추가
+            Array.from(stars).forEach(star => {
+                star.addEventListener('click', function(event) {
+                    const starValue = parseInt(this.dataset.value);
+                    const rect = this.getBoundingClientRect();
+                    const clickX = event.clientX - rect.left;
+
+                    const isLeftHalf = clickX < rect.width / 2;
+                    const starpoint = starValue - (isLeftHalf ? 0.5 : 0);
+
+                    setRating(starpoint); // 클릭한 별점
+                    starpointComment.value = starpoint; // 폼에 별점 적용
+                });
+            });
+        });
+
+        // comment 별점 수정
+        document.addEventListener("DOMContentLoaded", function() {
+            const starpointElements = document.querySelectorAll('.starpoint');
+            const commentDivs = Array.from(starpointElements).filter(element =>
+                element.id.startsWith("starpoint-")     // starpoint-로 시작하는 영역 추출 나의 경우엔 Comment영역만 존재
+            );
+
+            commentDivs.forEach(starpointElement => {
+                const commentId = starpointElement.id.split('-')[1];    // starpoint = [0] commentDTO.commentId = [1]
+                const starpoint = parseFloat(starpointElement.getAttribute('data-starpoint')) || 0;
+                const stars = starpointElement.getElementsByClassName('star')
+
+                const starpointDiv = document.getElementById('starpoint-' + commentId);
+
+                setRating(starpoint) // commnetDTO에 가지고 있던 별점
+
+                function setRating(starpoint) {
+                    for (let i = 0; i < stars.length; i++) {
+                        const starValue = parseInt(stars[i].dataset.value);
+                        if (starValue <= Math.floor(starpoint)) {
+                            stars[i].style.background = 'gold';
+                        } else if (starValue === Math.ceil(starpoint)) {
+                            const percentage = (starpoint % 1) * 100;
+                            stars[i].style.background = `linear-gradient(to right, gold ${percentage}%, #d3d3d3 ${percentage}%)`;
+                        } else {
+                            stars[i].style.background = '#d3d3d3';
+                        }
+                    }
+                }
+                
+                // 이벤트 사용 조건 넣기(시간나면)
+
+                // 각 별에 클릭 이벤트 추가
+                Array.from(stars).forEach(star => {
+                    star.addEventListener('click', function(event) {
+                        const starValue = parseInt(this.dataset.value);
+                        const rect = this.getBoundingClientRect();
+                        const clickX = event.clientX - rect.left;
+
+                        const isLeftHalf = clickX < rect.width / 2;
+                        const starpoint = starValue - (isLeftHalf ? 0.5 : 0);
+
+                        setRating(starpoint); // 클릭한 별점
+                        starpointDiv.value = starpoint; // 폼에 별점 적용
+                    });
+                });
+            
+            });
         });
     </script>
 </html>

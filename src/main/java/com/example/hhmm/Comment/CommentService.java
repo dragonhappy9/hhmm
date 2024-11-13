@@ -48,6 +48,7 @@ public class CommentService {
         Comment comment = this.commentRepository.findById(commentId)
                                 .orElseThrow(() -> new DataNotFoundException("Comment not found"));
         comment.setContent(commentDTO.getContent());
+        comment.setStarpoint(commentDTO.getStarpoint());
         comment.setUpdateDate(LocalDateTime.now());
         this.commentRepository.save(comment);
     }

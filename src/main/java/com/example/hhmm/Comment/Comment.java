@@ -46,12 +46,12 @@ public class Comment {
             this.regDate = LocalDateTime.now();
         }
         this.updateDate = null;
-        this.starpoint = 0;
     }
 
     public Comment(CommentDTO commentDTO){
         this.nickname = commentDTO.getNickname();
         this.content = commentDTO.getContent();
         this.postId = commentDTO.getPostId();
+        this.starpoint = commentDTO.getStarpoint();
     }
 }

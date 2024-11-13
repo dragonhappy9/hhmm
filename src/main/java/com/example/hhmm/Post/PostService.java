@@ -71,6 +71,31 @@ public class PostService {
     public PostDTO getPost(Long postId){
         Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
+
+        float post_starpoint = 0;
+        int comment_size = post.getComments().size();
+        int count = 0;
+
+        if (comment_size > 0) { // 댓글이 있고
+            for (int i = 0; i < comment_size; i++) {
+                Comment comment = post.getComments().get(i);
+                
+                if(comment.getStarpoint() != 0) { // 별점이 0인거 빼고
+                    post_starpoint += comment.getStarpoint();
+                    count++;
+                }
+            }
+    
+            if (count > 0) { // count0일때 나누면 NaN
+                post_starpoint /= count;
+            } else {
+                post_starpoint = 0;
+            }
+        } else {
+            post_starpoint = 0;
+        }
+        post.setStarpoint(post_starpoint);
+
         PostDTO postDTO = new PostDTO(post);
         postDTO.setCommentDTOs(post.getComments().stream()
                               .map(CommentDTO::new)
@@ -91,6 +116,32 @@ public class PostService {
         Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         post.setViewCount(post.getViewCount() + 1);  // 조회수 증가
+
+        float post_starpoint = 0;
+        int comment_size = post.getComments().size();
+        int count = 0;
+    
+        if (comment_size > 0) { // 댓글이 있고
+            for (int i = 0; i < comment_size; i++) {
+                Comment comment = post.getComments().get(i);
+                
+                if(comment.getStarpoint() != 0) { // 별점이 0인거 빼고
+                    post_starpoint += comment.getStarpoint();
+                    count++;
+                }
+            }
+    
+            if (count > 0) { // count0일때 나누면 NaN
+                post_starpoint /= count;
+            } else {
+                post_starpoint = 0;
+            }
+        } else {
+            post_starpoint = 0;  // 댓글이 없으면 별점은 0
+        }
+
+        post.setStarpoint(post_starpoint);
+        
         PostDTO postDTO = new PostDTO(post);
         postDTO.setCommentDTOs(post.getComments().stream()
                               .map(CommentDTO::new)

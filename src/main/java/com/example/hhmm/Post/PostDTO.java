@@ -40,5 +40,7 @@ public class PostDTO {
         this.content = post.getContent();
         this.regDate = post.getRegDate();
         this.updateDate = post.getUpdateDate();
+        this.viewCount = post.getViewCount();
+        this.starpoint = post.getStarpoint();
     }
 }
