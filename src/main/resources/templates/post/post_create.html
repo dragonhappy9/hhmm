@@ -1,18 +1,85 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container">
-        <h5 class="my-3 border-bottom pb-2">게시글 등록</h5>
-        <form th:action="@{/posts}" th:object="${postDTO}" method="post">
+        <h5 class="my-3 border-bottom pb-2">상품 등록</h5>
+        <form th:action="@{/posts}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
+            <!-- 제목 입력 -->
             <div class="mb-3">
                 <label for="title" class="form-label">제목</label>
-                <input type="text" th:field="*{title}" id="title" class="form-control">
+                <input type="text" th:field="*{title}" name="title" class="form-control">
             </div>
+            <!-- 파일 선택 -->
             <div class="mb-3">
-                <label for="content" class="form-label">내용</label>
-                <textarea th:field="*{content}" id="content" class="form-control" rows="10"></textarea>
+                <label class="form-label">미리보기 파일</label>
+                <input type="hidden" id="filePath" name="filePath">
+                <input type="file" class="form-control" onchange="previewMedia(event)">
+            </div>
+            <!-- 미리보기 영역과 설명 -->
+            <div class="mb-3">
+                <table>
+                    <tr>
+                        <td rowspan="2">
+                            <div id="media-preview" class="form-control p-2 me-1" style="width: 450px; height: 457px;">
+
+                            </div>
+                        </td>
+                        <td>
+                            <label for="content" class="form-label">설명</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea th:field="*{content}" name="content" class="form-control" rows="17" cols="80"></textarea>
+                        </td>
+                    </tr>
+                </table>
             </div>
             <input type="submit" value="저장하기" class="btn btn-primary my-2">
         </form>
     </div>
+
+    <script layout:fragment="script" type="text/javascript">
+        function previewMedia(event) {
+            const previewContainer = document.getElementById('media-preview');
+            previewContainer.innerHTML = '';
+            const file = event.target.files[0];
+
+            if (file) {
+                const formData = new FormData();
+                formData.append("file", file);
+
+                // 서버에 파일 업로드 요청
+                fetch('/posts/uploadFile', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(filePath => {
+                    document.getElementById('filePath').value = filePath;
+                    const fileType = file.type;
+                    if (fileType.startsWith('image/')) { // 이미지인 경우
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'fit';
+                        previewContainer.appendChild(img);
+                    } else if (fileType.startsWith('video/')) { // 영상일 경우
+                        const video = document.createElement('video');
+                        video.src = URL.createObjectURL(file);
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.style.objectFit = 'fill';
+                        video.controls = true;
+                        video.style.cursor = 'pointer';
+                        previewContainer.appendChild(video);
+                    } else {
+                        previewContainer.innerHTML = '미리보기를 지원하지 않는 파일 형식입니다.';
+                    }
+                })
+                .catch(error => console.error('File upload 실패: ', error));
+            }
+        }
+    </script>
 </html>

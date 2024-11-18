@@ -52,7 +52,7 @@ public class Post {
     private float starpoint;
 
     @Column(nullable = true)
-    private String imgUrl;
+    private String filePath;
 
     // 부모 Entity의 삭제 영속성을 상속하여 자동으로 자식 Entity를 삭제, Post를 읽어올때 Comment들도 읽어오도록 변경
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)     
@@ -67,12 +67,15 @@ public class Post {
         this.updateDate = null;                     // 수정 시간을 포함시킴
         this.viewCount = 0;
         this.starpoint = 0;
-        this.imgUrl = "등록된 이미지가 없습니다.";
     }
 
     public Post (PostDTO postDTO){
         this.nickname = postDTO.getNickname();
         this.title = postDTO.getTitle();
         this.content = postDTO.getContent();
+        if(postDTO.getFilePath().equals(null))
+            this.filePath = "등록된 파일이 없습니다.";
+        else
+            this.filePath = postDTO.getFilePath();
     }
 }

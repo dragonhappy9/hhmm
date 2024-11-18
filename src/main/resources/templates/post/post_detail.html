@@ -7,9 +7,15 @@
         <h2 class="border-bottom py-2" th:text="${postDTO.title}"></h2>
         <div class="card my-3">
             <div class="card-body">
-                <!-- 내용 -->
-                <div class="card-text" th:utext="${@commonUtil.markdown(postDTO.content)}"></div>
-                <div class="d-flex justify-content-end">
+                <!-- 이미지 -->
+                <div class="d-flex p-3">
+                    <div>
+                        <img class="card" th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지 혹은 동영상" style="width: 100%; height: 457px; object-fit: cover;">
+                    </div>
+                    <!-- 내용 -->
+                    <div class="card ms-3 p-3" style="width: 70%; height: 457px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></div>
+                </div>
+                <div class="d-flex justify-content-end m-3">
                     <div class="badge bg-light text-dark text-start">
                         <div class="d-flex align-items-center">
                             <table>
@@ -38,6 +44,7 @@
                                             <div class="star"></div>
                                             <div class="star"></div>
                                             <div class="star"></div>
+                                            <span th:text="'(' + ${postDTO.starpoint} + '점)'"></span>
                                         </div>
                                     </td>
                                 </tr>
@@ -45,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="my-3">
+                <div class="m-3">
                     <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm btn-outline-secondary"
                         sec:authorize="isAuthenticated()"
                         th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}"
@@ -61,7 +68,7 @@
         </div>
         <hr>
         <!-- 답변 반복 시작 -->
-        <div class="card my-3" th:each="commentDTO : ${postDTO.commentDTOs}">
+        <div class="card my-3 p-3" th:each="commentDTO : ${postDTO.commentDTOs}">
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
@@ -88,12 +95,13 @@
                                 <td class="text-start py-2">별점</td>
                                 <td>&nbsp;:&nbsp;</td>
                                 <td>
-                                    <div th:id="'starpoint-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}" >
+                                    <div th:id="'starpoint-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}">
                                         <div class="star" data-value="1"></div>
                                         <div class="star" data-value="2"></div>
                                         <div class="star" data-value="3"></div>
                                         <div class="star" data-value="4"></div>
                                         <div class="star" data-value="5"></div>
+                                        <span th:text="'(' + ${commentDTO.starpoint} + '점)'"></span>
                                     </div>
                                 </td>
                             </tr>
@@ -113,7 +121,7 @@
                             <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.commentId}" name="starpoint"></input>
                         </div>
                     </form>
-                    <!-- 수정_process 폼 -->
+                    <!-- 삭제 폼 -->
                     <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="delete" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -133,7 +141,7 @@
         <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post" class="my-3">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-            <div id="starpoint" class="starpoint mb-3" >
+            <div id="starpoint" class="starpoint mb-3" sec:authorize="isAuthenticated()">
                 <div class="star" data-value="1"></div>
                 <div class="star" data-value="2"></div>
                 <div class="star" data-value="3"></div>
@@ -147,97 +155,94 @@
         </form>
     </div>
 
-    <!-- sec:authorize="isAuthenticated()" -->
     <script layout:fragment="script" type='text/javascript'>
-        
-        // 수정하기 버튼 메소드
-        function editComment(commentId) {
-            const comment_input = document.getElementById('comment-content-'+ commentId);
-            const edit_button = document.getElementById('edit-comment-button-' + commentId);
-            const save_button = document.getElementById('save-comment-button-' + commentId);
-
-            if (comment_input.disabled) {
-                comment_input.disabled = false;
-                edit_button.classList.add('d-none');
-                save_button.classList.remove('d-none');
-            }
-        }
-        
-        // 후기 전송전 호출되는 메소드
-        function copyInput(commentId){
-            const comment_input = document.getElementById('comment-content-' + commentId);
-            const copy_input = document.getElementById('copy-comment-content-' + commentId);
-            const starpointDiv = document.getElementById('starpoint-' + commentId);
-            const edit_starpoint = document.getElementById('edit-starpoint-' + commentId);
-            
-            copy_input.value = comment_input.value;
-            edit_starpoint.value = starpointDiv.value;
-        }
-
-        // post 별점 표시
-        document.addEventListener("DOMContentLoaded", function() {
-            const starpointElement = document.querySelector('#post-starpoint'); // id가 post-starpoint인 Element를 가져옴
-            const starpoint = starpointElement.dataset.postStarpoint;
-            const stars = starpointElement.getElementsByClassName('star');
-
-            const totalStars = 5;
-            const fullStars = Math.floor(starpoint);
-            const decimalPart = starpoint - fullStars;
-
-            for (let i = 0; i < fullStars; i++) {
-                stars[i].style.background = 'gold';
-            }
-
-            // 별점의 별을 퍼센테이지로 채우기
-            if (decimalPart > 0) {
-                const partialStar = stars[fullStars];
-                partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;
-            }
-
-            for (let i = fullStars + (decimalPart > 0 ? 1 : 0); i < totalStars; i++) {
-                stars[i].style.background = '#d3d3d3';
-            }
-        });
-
-        // comment 별점 추가
-        document.addEventListener("DOMContentLoaded", function() {
-            const starpointElement = document.getElementById('starpoint');
-            const stars = starpointElement.getElementsByClassName('star');
-            const starpointComment = document.getElementById('comment-starpoint');
-
-            function setRating(starpoint) {
-                for (let i = 0; i < stars.length; i++) {
-                    const starValue = parseInt(stars[i].dataset.value);
-                    if (starValue <= Math.floor(starpoint)) {
-                        stars[i].style.background = 'gold';
-                    } else if (starValue === Math.ceil(starpoint)) {
-                        const percentage = (starpoint % 1) * 100;
-                        stars[i].style.background = `linear-gradient(to right, gold ${percentage}%, #d3d3d3 ${percentage}%)`;
-                    } else {
-                        stars[i].style.background = '#d3d3d3';
-                    }
+        // 별점 칠하기
+        function setRating(starpoint, stars) {
+            for (let i = 0; i < stars.length; i++) {
+                const starValue = parseInt(stars[i].dataset.value);
+                if (starValue <= Math.floor(starpoint)) {
+                    stars[i].style.background = 'gold';
+                } else if (starValue === Math.ceil(starpoint)) {
+                    const percentage = (starpoint % 1) * 100;
+                    stars[i].style.background = `linear-gradient(to right, gold ${percentage}%, #d3d3d3 ${percentage}%)`;
+                } else {
+                    stars[i].style.background = '#d3d3d3';
                 }
             }
-                
-            // 이벤트 사용 조건 넣기(시간나면)
-
-            // 각 별에 클릭 이벤트 추가
+        }
+    
+        // 별클릭시 발동하는 리스너 등록
+        function initializeStarClick(stars, starpointInput) {
             Array.from(stars).forEach(star => {
                 star.addEventListener('click', function(event) {
                     const starValue = parseInt(this.dataset.value);
                     const rect = this.getBoundingClientRect();
                     const clickX = event.clientX - rect.left;
-
                     const isLeftHalf = clickX < rect.width / 2;
                     const starpoint = starValue - (isLeftHalf ? 0.5 : 0);
-
-                    setRating(starpoint); // 클릭한 별점
-                    starpointComment.value = starpoint; // 폼에 별점 적용
+    
+                    setRating(starpoint, stars);
+                    starpointInput.value = starpoint;
                 });
             });
-        });
+        }
+    
+        // 수정 버튼 클릭
+        function editComment(commentId) {
+            const commentInput = document.getElementById('comment-content-' + commentId);
+            const editButton = document.getElementById('edit-comment-button-' + commentId);
+            const saveButton = document.getElementById('save-comment-button-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const stars = starpointDiv.getElementsByClassName('star');
+            const starpointInput = document.getElementById('edit-starpoint-' + commentId);
+    
+            if (commentInput.disabled) {
+                commentInput.disabled = false;
+                editButton.classList.add('d-none');
+                saveButton.classList.remove('d-none');
+                initializeStarClick(stars, starpointInput);
+            }
+        }
+    
+        // 수정 할때 값 복사
+        function copyInput(commentId) {
+            const commentInput = document.getElementById('comment-content-' + commentId);
+            const copyInput = document.getElementById('copy-comment-content-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const editStarpoint = document.getElementById('edit-starpoint-' + commentId);
+    
+            copyInput.value = commentInput.value;
+            editStarpoint.value = starpointDiv.dataset.starpoint;
+        }
+    
+        // 페이지 로드시 Post 별점 색칠
+        document.addEventListener("DOMContentLoaded", function() {
+            const postStarpointElement = document.querySelector('#post-starpoint');
+            if (postStarpointElement) {
+                const postStarpoint = postStarpointElement.dataset.postStarpoint;
+                const stars = postStarpointElement.getElementsByClassName('star');
+                
+                const totalStars = 5;
+                const fullStars = Math.floor(postStarpoint);
+                const decimalPart = postStarpoint - fullStars;
 
-        // comment 별점 수정
+                for (let i = 0; i < fullStars; i++) {
+                    stars[i].style.background = 'gold';
+                }
+
+                // 별점의 별을 퍼센테이지로 채우기
+                if (decimalPart > 0) {
+                    const partialStar = stars[fullStars];
+                    partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;
+                }
+
+                for (let i = fullStars + (decimalPart > 0 ? 1 : 0); i < totalStars; i++) {
+                    stars[i].style.background = '#d3d3d3';
+                }
+            }
+        });
+        
+        // 페이지 로드시 댓글 색칠, 리스너
         document.addEventListener("DOMContentLoaded", function() {
             const starpointElements = document.querySelectorAll('.starpoint');
             const commentDivs = Array.from(starpointElements).filter(element =>
@@ -250,41 +255,15 @@
                 const stars = starpointElement.getElementsByClassName('star')
 
                 const starpointDiv = document.getElementById('starpoint-' + commentId);
-
-                setRating(starpoint) // commnetDTO에 가지고 있던 별점
-
-                function setRating(starpoint) {
-                    for (let i = 0; i < stars.length; i++) {
-                        const starValue = parseInt(stars[i].dataset.value);
-                        if (starValue <= Math.floor(starpoint)) {
-                            stars[i].style.background = 'gold';
-                        } else if (starValue === Math.ceil(starpoint)) {
-                            const percentage = (starpoint % 1) * 100;
-                            stars[i].style.background = `linear-gradient(to right, gold ${percentage}%, #d3d3d3 ${percentage}%)`;
-                        } else {
-                            stars[i].style.background = '#d3d3d3';
-                        }
-                    }
-                }
-                
-                // 이벤트 사용 조건 넣기(시간나면)
-
-                // 각 별에 클릭 이벤트 추가
-                Array.from(stars).forEach(star => {
-                    star.addEventListener('click', function(event) {
-                        const starValue = parseInt(this.dataset.value);
-                        const rect = this.getBoundingClientRect();
-                        const clickX = event.clientX - rect.left;
-
-                        const isLeftHalf = clickX < rect.width / 2;
-                        const starpoint = starValue - (isLeftHalf ? 0.5 : 0);
-
-                        setRating(starpoint); // 클릭한 별점
-                        starpointDiv.value = starpoint; // 폼에 별점 적용
-                    });
-                });
-            
+    
+                setRating(starpoint, stars) // commnetDTO에 가지고 있던 별점
             });
+
+            const starpointDiv = document.getElementById('starpoint');
+            const stars = starpointDiv.getElementsByClassName('star');
+            const starpointComment = document.getElementById('comment-starpoint');
+            initializeStarClick(stars, starpointComment);
+
         });
     </script>
 </html>

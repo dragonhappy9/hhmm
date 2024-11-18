@@ -1,7 +1,13 @@
 package com.example.hhmm.Post;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -48,6 +55,24 @@ public class PostController {
         model.addAttribute("commnetDTOs", postDTO.getCommentDTOs());
         model.addAttribute("commentDTO", new CommentDTO());
         return "post/post_detail";
+    }
+
+    @PostMapping("/uploadFile")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            String filePath = "src/main/resources/static/file_path/" + file.getOriginalFilename();
+            Path path = Paths.get(filePath);
+            
+            if (Files.exists(path)) {
+                return ResponseEntity.ok(file.getOriginalFilename()); // 파일이 존재하면 같은 파일로 보고 경로만 반환
+            }                                       // 나중에 시간이 남으면 파일 저장시 키값으로 고유한 파일이름으로 저장하도록
+                                                    // 실제 파일명은 따로 저장하도록 할 예정
+            
+            Files.write(path, file.getBytes());
+            return ResponseEntity.ok(file.getOriginalFilename());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed");
+        }
     }
 
     // Post 생성 폼으로 이동
