@@ -1,6 +1,9 @@
 package com.example.hhmm.Item;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,17 +13,20 @@ import lombok.Setter;
 @Setter
 public class ItemDTO {
 
-    @NotEmpty(message = "상품명은 필수항목입니다.")
+    @NotBlank(message = "상품명은 필수항목입니다.")
     private String itemName;
 
-    @NotEmpty(message = "가격은 필수항목입니다.")
+    @Positive(message = "0원은 등록할 수 없습니다.")
+    @NotNull(message = "올바른 가격을 입력해주세요")
     private Integer price;
 
+    @PositiveOrZero(message = "수량은 0이상이어야 합니다.")
+    @NotNull(message = "수량은 0이상이어야 합니다.")
     private Integer quantity;
 
     public ItemDTO(Item item){
         this.itemName = item.getItemName();
         this.price = item.getPrice();
-        this.quantity = item.getPrice();
+        this.quantity = item.getQuantity();
     }
 }

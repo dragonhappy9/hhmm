@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.hhmm.Comment.Comment;
+import com.example.hhmm.Item.Item;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +40,10 @@ public class Post {
     
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime regDate;
@@ -73,9 +79,10 @@ public class Post {
         this.nickname = postDTO.getNickname();
         this.title = postDTO.getTitle();
         this.content = postDTO.getContent();
-        if(postDTO.getFilePath().equals(null))
-            this.filePath = "등록된 파일이 없습니다.";
-        else
-            this.filePath = postDTO.getFilePath();
+        this.filePath = (postDTO.getFilePath() == null || postDTO.getFilePath().isEmpty())
+            ? "등록된 파일이 없습니다." : postDTO.getFilePath();
+        if (postDTO.getItemDTO() != null) {
+            this.item = new Item(postDTO.getItemDTO());
+        }
     }
 }

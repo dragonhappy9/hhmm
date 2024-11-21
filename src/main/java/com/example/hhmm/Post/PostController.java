@@ -52,11 +52,13 @@ public class PostController {
     public String read(Model model, @PathVariable("postId") Long postId) {
         PostDTO postDTO = this.postService.readPost(postId);
         model.addAttribute("postDTO", postDTO);
+        model.addAttribute("ItemDTO", postDTO.getItemDTO());
         model.addAttribute("commnetDTOs", postDTO.getCommentDTOs());
         model.addAttribute("commentDTO", new CommentDTO());
         return "post/post_detail";
     }
 
+    // 파일 전송
     @PostMapping("/uploadFile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -78,14 +80,14 @@ public class PostController {
     // Post 생성 폼으로 이동
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
-    public String createForm(PostDTO postDTO) {
+    public String createForm(Model model, PostDTO postDTO) {
         return "post/post_create";
     }
     
     // Post 생성 요청
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public String createPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String createPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
         if (bindingResult.hasErrors()) {
             return "post/post_create";
         }
@@ -96,6 +98,7 @@ public class PostController {
         postDTO.setNickname(userDetails.getNickname());
 
         postService.createPost(postDTO);
+
         redirectAttributes.addFlashAttribute("message", "Post create 성공");
         return "redirect:/posts";
     }
@@ -123,10 +126,7 @@ public class PostController {
     // Post 수정 요청
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{postId}")
-    public String editPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        if (bindingResult.hasErrors()) {
-            return "post/post_update";
-        }
+    public String editPost(PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         PostDTO _postDTO = postService.getPost(postDTO.getPostId());
 
         // Authentication 객체에서 CustomUserDetails를 가져옴

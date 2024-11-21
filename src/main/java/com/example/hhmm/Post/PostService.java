@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import com.example.Exception.DataNotFoundException;
 import com.example.hhmm.Comment.Comment;
 import com.example.hhmm.Comment.CommentDTO;
-
+import com.example.hhmm.Item.Item;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -154,9 +154,14 @@ public class PostService {
     public void updatePost(Long postId, PostDTO postDTO){
         Post post = this.postRepository.findById(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found")); 
+        Item item = post.getItem();
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         post.setUpdateDate(LocalDateTime.now());
+        item.setItemName(postDTO.getItemDTO().getItemName());
+        item.setPrice(postDTO.getItemDTO().getPrice());
+        item.setQuantity(postDTO.getItemDTO().getQuantity());
+        post.setItem(item);
         this.postRepository.save(post);
     }
 

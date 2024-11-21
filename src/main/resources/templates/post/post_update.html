@@ -1,42 +1,81 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container">
         <h5 class="my-3 border-bottom pb-2">상품 수정</h5>
-        <form th:action="@{/posts}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/posts/{postId}(postId=${postDTO.postId})}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
             <!-- 업데이트 요청시 사용됨 -->
             <input type="hidden" name="_method" value="patch" />
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
             <!-- 제목 입력 -->
-            <div class="mb-3">
-                <label for="title" class="form-label">제목</label>
-                <input type="text" th:field="*{title}" name="title" class="form-control">
-            </div>
-            <!-- 파일 선택 -->
-            <div class="mb-3">
-                <label class="form-label">미리보기 파일</label>
-                <input type="hidden" id="filePath" name="filePath">
-                <input type="file" class="form-control" onchange="previewMedia(event)">
-            </div>
-            <!-- 미리보기 영역과 상품 설명 -->
-            <div class="mb-3">
-                <table>
-                    <tr>
-                        <td rowspan="2">
-                            <div id="media-preview" class="form-control p-2 me-1" style="width: 450px; height: 457px;">
-                                <img id="preview-img" class="card" th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지" style="width: 100%; height: 100%; object-fit: cover;">
-                                <video id="preview-video" class="card" th:src="@{|/file_path/${postDTO.filePath}|}" style="width: 100%; height: 100%; object-fit: cover;" controls></video>
-                            </div>
-                        </td>
-                        <td>
-                            <label for="content" class="form-label">상품 설명</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <textarea th:field="*{content}" name="content" class="form-control" rows="17" cols="80"></textarea>
-                        </td>
-                    </tr>
-                </table>
+            <div class="container g-0">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <table class="mb-2 w-100" style="border-collapse: separate; border-spacing: 0px 5px;">
+                            <tr>
+                                <td>제목</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" name="title" class="form-control" th:value="${postDTO.title}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>미리보기 파일</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="file" class="form-control" onchange="previewMedia(event)">
+                                    <input type="text" style="display: none;" id="filePath" name="filePath" th:value="${postDTO.filePath}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>미리보기</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div th:if="${postDTO.itemDTO.quantity == 0}" src="/event/soldout.png">
+                                    </div>
+                                    <div id="media-preview" class="form-control p-2" style="width: 100%; height: 422px;">
+                                        <img id="preview-img" class="card" th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <video id="preview-video" class="card" th:src="@{|/file_path/${postDTO.filePath}|}" style="width: 100%; height: 100%; object-fit: cover;" controls></video>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="mb-2 w-100" style="border-collapse: separate; border-spacing: 0px 5px;">
+                            <tr>
+                                <td colspan="2">상품명</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input type="text" name="itemDTO.itemName" class="form-control" th:value="${postDTO.itemDTO.itemName}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>상품 가격</td>
+                                <td>상품 수량</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="text" name="itemDTO.price" class="form-control" th:value="${postDTO.itemDTO.price}">
+                                </td>
+                                <td>
+                                    <input type="text" name="itemDTO.quantity" class="form-control" th:value="${postDTO.itemDTO.quantity}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">상품 설명</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <textarea name="content" class="form-control" rows="17" th:text="${postDTO.content}"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
             <input type="submit" value="저장하기" class="btn btn-primary my-2">
         </form>
@@ -88,7 +127,7 @@
                         img.src = URL.createObjectURL(file);
                         img.style.width = '100%';
                         img.style.height = '100%';
-                        img.style.objectFit = 'fit';
+                        img.style.objectFit = 'contain';
                         previewContainer.appendChild(img);
                     } else if (fileType.startsWith('video/')) { // 영상일 경우
                         const video = document.createElement('video');
@@ -97,7 +136,7 @@
                         video.style.height = '100%';
                         video.style.objectFit = 'fill';
                         video.controls = true;
-                        video.style.cursor = 'pointer';
+                        video.style.cursor = 'contain';
                         previewContainer.appendChild(video);
                     } else {
                         previewContainer.innerHTML = '미리보기를 지원하지 않는 파일 형식입니다.';

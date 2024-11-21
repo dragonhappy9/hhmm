@@ -11,7 +11,6 @@ import com.example.hhmm.Post.PostDTO;
 import com.example.hhmm.Post.PostRepository;
 import com.example.hhmm.Post.PostService;
 
-import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -34,16 +33,16 @@ class RepositoryTests {
         this.postRepository.save(post);
     }
 
-    @Test
-    void create300PostJPA(){
-        for(int i = 2; i <=300; i++){
-            PostDTO postDTO = new PostDTO();
-            postDTO.setTitle(String.format("테스트 데이터 입니다:[%03d]", i));
-            postDTO.setContent("내용 없음!");
-            postDTO.setNickname("홍길동");
-            this.postService.createPost(postDTO);
-        }
-    }
+    // @Test
+    // void create300PostJPA(){
+    //     for(int i = 2; i <=300; i++){
+    //         PostDTO postDTO = new PostDTO();
+    //         postDTO.setTitle(String.format("테스트 데이터 입니다:[%03d]", i));
+    //         postDTO.setContent("내용 없음!");
+    //         postDTO.setNickname("홍길동");
+    //         this.postService.createPost(postDTO);
+    //     }
+    // }
 
     @Test
     void testJPA2(){
@@ -56,12 +55,4 @@ class RepositoryTests {
             this.commentRepository.save(comment);
         }
     }
-
-    @Test
-    void deleteJPA(){
-        List<Comment> comments = this.commentRepository.findByPostId(this.postRepository.findById(2L).get().getPostId());
-        this.commentRepository.deleteAll(comments);
-        this.postRepository.delete(this.postRepository.findById(2L).get());
-    }
-
 }

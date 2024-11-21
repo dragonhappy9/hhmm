@@ -8,14 +8,26 @@
         <div class="card my-3">
             <div class="card-body">
                 <!-- 이미지 -->
-                <div class="d-flex p-3">
-                    <div>
-                        <img class="card" th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지 혹은 동영상" style="width: 100%; height: 457px; object-fit: cover;">
+                <div class="d-flex">
+                    <div class="card me-3" style="width: 500px; height: 500px;">
+                        <span th:if="${postDTO.itemDTO.quantity == 0}" style="width: 50px; height: 50px;">
+                            <img src="../event/soldout.png" style="width: 100%; height: 100%;">
+                        </span>
+                        <img th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지 혹은 동영상" style="width: 100%; height: 90%; object-fit: contain;">
                     </div>
-                    <!-- 내용 -->
-                    <div class="card ms-3 p-3" style="width: 70%; height: 457px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></div>
+                    <div class="d-flex flex-column">
+                        <!-- 상품명 -->
+                        <span class="mb-2 mt-1" type="text" th:text="'상품명: ' + ${postDTO.itemDTO.itemName}"></span>
+                        <!-- 내용 -->
+                        <span class="card mb-2 p-3" style="width: 375px; height: 350px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
+                        <!-- 가격 -->
+                        <span class="mb-2" type="text" th:text="'가격: ' + ${postDTO.itemDTO.price}"></span>
+                        <!-- 남은 개수 -->
+                        <span class="mb-2" type="text" th:text="'남은 개수: ' + ${postDTO.itemDTO.quantity}"></span>
+                        <span th:if="${postDTO.itemDTO.quantity != 0}"><button class="btn btn-sm btn-outline-secondary p-2" onclick="">장바구니 담기</button></span>
+                    </div>
                 </div>
-                <div class="d-flex justify-content-end m-3">
+                <div class="d-flex justify-content-end mt-2">
                     <div class="badge bg-light text-dark text-start">
                         <div class="d-flex align-items-center">
                             <table>
@@ -52,8 +64,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="m-3">
-                    <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm btn-outline-secondary"
+                <div class="d-flex">
+                    <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm btn-outline-secondary me-1"
                         sec:authorize="isAuthenticated()"
                         th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}"
                         th:text="수정"></a>
@@ -68,7 +80,7 @@
         </div>
         <hr>
         <!-- 답변 반복 시작 -->
-        <div class="card my-3 p-3" th:each="commentDTO : ${postDTO.commentDTOs}">
+        <div class="card" th:each="commentDTO : ${postDTO.commentDTOs}">
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
@@ -108,14 +120,14 @@
                         </table>
                     </div>
                 </div>
-                <div class="my-3 d-flex" >
+                <div class="d-flex" >
                     <!-- 수정 폼 -->
-                    <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline; margin-right: 5px;" sec:authorize="isAuthenticated()">
+                    <form class="me-1" th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="patch" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <input type="hidden" th:id="'copy-comment-content-' + ${commentDTO.commentId}" name="content" />
 
-                        <div class="my-3" th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
+                        <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
                             <button type="button" class="btn btn-sm btn-outline-secondary" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
                             <button type="submit" class="btn btn-sm btn-outline-secondary d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
                             <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.commentId}" name="starpoint"></input>
@@ -126,8 +138,8 @@
                         <input type="hidden" name="_method" value="delete" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         
-                        <div class="my-3">
-                            <div class="my-3" th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}">
+                        <div>
+                            <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}">
                                 <button type="submit" class="btn btn-sm btn-outline-secondary">삭제</button>
                             </div>
                         </div>
@@ -138,7 +150,7 @@
         <hr>
         <!-- 답변 반복 끝  -->
         <!-- 답변 작성 -->
-        <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post" class="my-3">
+        <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
             <div id="starpoint" class="starpoint mb-3" sec:authorize="isAuthenticated()">
