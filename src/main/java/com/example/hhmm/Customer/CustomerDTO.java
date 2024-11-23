@@ -1,5 +1,7 @@
 package com.example.hhmm.Customer;
 
+import com.example.hhmm.Bucket.Bucket;
+
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -35,6 +37,8 @@ public class CustomerDTO {
     @NotEmpty(message = "주소는 필수항목입니다.")
     private String home;
 
+    private Bucket bucket;
+
     public CustomerDTO(Customer customer){
         this.name = customer.getName();
         this.password = customer.getPassword();
@@ -42,5 +46,6 @@ public class CustomerDTO {
         this.email = customer.getEmail();
         this.gender = customer.isGender();
         this.home = customer.getHome();
+        this.bucket = customer.getBucket();
     }
 }

@@ -27,7 +27,8 @@ public class SecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 
             .csrf((csrf)->csrf
-                .ignoringRequestMatchers(new AntPathRequestMatcher("/posts/uploadFile")))
+                .ignoringRequestMatchers(new AntPathRequestMatcher("/posts/uploadFile"),
+                                            new AntPathRequestMatcher("/bucket/*/add")))
                 .headers((headers) -> headers
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(
                         XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
@@ -40,7 +41,7 @@ public class SecurityConfig {
                 
             .logout((logout) -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/customer/logout"))
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/posts")
                 .invalidateHttpSession(true))     
         ;
         return http.build();

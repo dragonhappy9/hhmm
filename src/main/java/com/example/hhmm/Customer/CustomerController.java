@@ -30,7 +30,7 @@ public class CustomerController {
 
         if (!customerDTO.getPassword().equals(customerDTO.getPasswordChk())) {
             bindingResult.rejectValue("passwordChk", "passwordInCorrect", 
-                    "2개의 패스워드가 일치하지 않습니다.");
+                    "패스워드가 일치하지 않습니다.");
             return "customer/signup";
         }
 
@@ -46,7 +46,7 @@ public class CustomerController {
             return "customer/signup";
         }
 
-        return "redirect:/";
+        return "redirect:/posts";
     }
 
     @GetMapping("/login")

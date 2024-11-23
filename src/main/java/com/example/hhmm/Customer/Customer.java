@@ -42,7 +42,7 @@ public class Customer {
     @Column(length = 50, nullable = false)
     private String home;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     @JoinColumn(name = "bucket_id")
     private Bucket bucket;      // 하나의 Customer는 하나의 Bucket을 가지는 관계
 
@@ -53,5 +53,6 @@ public class Customer {
         this.email = CustomerDTO.getEmail();
         this.gender = CustomerDTO.isGender();
         this.home = CustomerDTO.getHome();
+        this.bucket = CustomerDTO.getBucket();
     }
 }

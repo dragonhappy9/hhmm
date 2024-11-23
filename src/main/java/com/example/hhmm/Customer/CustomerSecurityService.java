@@ -32,8 +32,6 @@ public class CustomerSecurityService implements UserDetailsService {
         // 여기서는 사용자의 권한 정보를 포함하기위해 권한 설정을 하는 것이다.
         if("marketadmin".equals(name.trim())){
             authorities.add(new SimpleGrantedAuthority(CustomerRole.MARKETMANAGER.getValue()));
-        }else if("postadmin".equals(name.trim())){
-            authorities.add(new SimpleGrantedAuthority(CustomerRole.POSTMANAGER.getValue()));
         }else{
             authorities.add(new SimpleGrantedAuthority(CustomerRole.CUSTOMER.getValue()));
         }

@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class ItemDTO {
 
+    private Long itemId;
+
     @NotBlank(message = "상품명은 필수항목입니다.")
     private String itemName;
 
@@ -25,6 +27,7 @@ public class ItemDTO {
     private Integer quantity;
 
     public ItemDTO(Item item){
+        this.itemId = item.getItemId();
         this.itemName = item.getItemName();
         this.price = item.getPrice();
         this.quantity = item.getQuantity();

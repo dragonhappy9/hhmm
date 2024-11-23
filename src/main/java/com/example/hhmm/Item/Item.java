@@ -1,18 +1,19 @@
 package com.example.hhmm.Item;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-import com.example.hhmm.Bucket.Bucket;
+import com.example.hhmm.Bucket.BucketItem;
 
 import java.util.ArrayList;
 
@@ -35,8 +36,8 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
-    @ManyToMany(mappedBy = "itemList")      // ManyToMany 관계 이므로 포함된 Bucket의 리스트
-    private List<Bucket> Buckets = new ArrayList<>();
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE)    
+    private List<BucketItem> BucketList = new ArrayList<>();
 
     public Item(ItemDTO itemDTO){
         this.itemName = itemDTO.getItemName();
