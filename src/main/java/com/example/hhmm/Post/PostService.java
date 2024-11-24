@@ -157,6 +157,7 @@ public class PostService {
         Item item = post.getItem();
         post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
+        post.setFilePath(postDTO.getFilePath());
         post.setUpdateDate(LocalDateTime.now());
         item.setItemName(postDTO.getItemDTO().getItemName());
         item.setPrice(postDTO.getItemDTO().getPrice());

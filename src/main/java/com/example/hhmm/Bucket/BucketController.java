@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class BucketController {
     
     private final BucketService bucketService;
-
+    
     @PostMapping("/{itemId}/add")
     public ResponseEntity<?> addToBucket(@RequestBody Map<String, String> requestData) {
         Long itemId = Long.parseLong(requestData.get("itemId"));
