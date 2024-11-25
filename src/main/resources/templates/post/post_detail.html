@@ -21,7 +21,7 @@
                         <!-- 내용 -->
                         <span class="card mb-2 p-3" style="width: 375px; height: 350px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
                         <!-- 가격 -->
-                        <span class="mb-2" type="text" th:text="'가격: ' + ${postDTO.itemDTO.price}"></span>
+                        <span class="mb-2" type="text" th:text="'가격: ' + ${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span>
                         <!-- 남은 개수 -->
                         <span class="mb-2" type="text" th:text="'남은 개수: ' + ${postDTO.itemDTO.quantity}"></span>
                         <span th:if="${postDTO.itemDTO.quantity != 0}">
@@ -86,7 +86,7 @@
         </div>
         <hr>
         <!-- 답변 반복 시작 -->
-        <div class="card" th:each="commentDTO : ${postDTO.commentDTOs}">
+        <div class="card mb-3" th:each="commentDTO : ${postDTO.commentDTOs}">
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
