@@ -18,6 +18,6 @@ public class BucketDTO {
 
     public BucketDTO(Bucket bucket){
         this.bucketId = bucket.getBucketId();
-        this.itemList = bucket.getItemList().stream().map(BucketItemDTO::new).collect(Collectors.toList());
+        this.itemList = bucket.getItemList().stream().map(bucketItem -> new BucketItemDTO(bucketItem, false)).collect(Collectors.toList());
     }
 }

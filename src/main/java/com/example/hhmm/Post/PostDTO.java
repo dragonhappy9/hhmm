@@ -37,9 +37,6 @@ public class PostDTO {
     private int viewCount;
     private float starpoint;
 
-    @NotBlank(message="파일을 업로드해주세요")
-    private String filePath;
-
     private List<CommentDTO> commentDTOs;
 
     public PostDTO(Post post) {
@@ -51,7 +48,6 @@ public class PostDTO {
         this.updateDate = post.getUpdateDate();
         this.viewCount = post.getViewCount();
         this.starpoint = post.getStarpoint();
-        this.filePath = post.getFilePath();
         this.itemDTO = new ItemDTO(post.getItem());
     }
 }

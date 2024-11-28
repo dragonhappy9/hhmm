@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,6 +47,14 @@ public class Customer {
     @JoinColumn(name = "bucket_id")
     private Bucket bucket;      // 하나의 Customer는 하나의 Bucket을 가지는 관계
 
+    @Column(nullable = true)
+    private int payMoney;
+
+    @PrePersist
+    protected void onCreate(){
+        this.payMoney = 0;
+    }
+
     public Customer(CustomerDTO CustomerDTO) {
         this.name = CustomerDTO.getName();
         this.password = CustomerDTO.getPassword();
@@ -54,5 +63,6 @@ public class Customer {
         this.gender = CustomerDTO.isGender();
         this.home = CustomerDTO.getHome();
         this.bucket = CustomerDTO.getBucket();
+        this.payMoney = CustomerDTO.getPayMoney();
     }
 }

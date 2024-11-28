@@ -13,24 +13,27 @@
                         <span th:if="${postDTO.itemDTO.quantity == 0}" style="width: 50px; height: 50px;">
                             <img src="../event/soldout.png" style="width: 100%; height: 100%;">
                         </span>
-                        <img th:src="@{|/file_path/${postDTO.filePath}|}" alt="상품 이미지 혹은 동영상" style="width: 100%; height: 90%; object-fit: contain;">
+                        <img th:src="@{|/file_path/${postDTO.itemDTO.filePath}|}" alt="상품 이미지 혹은 동영상" style="width: 100%; height: 90%; object-fit: contain;">
                     </div>
                     <div class="d-flex flex-column">
                         <!-- 상품명 -->
-                        <span class="mb-2 mt-1" type="text" th:text="'상품명: ' + ${postDTO.itemDTO.itemName}"></span>
+                        <span class="mb-2 mt-1" th:text="'상품명: ' + ${postDTO.itemDTO.itemName}"></span>
                         <!-- 내용 -->
-                        <span class="card mb-2 p-3" style="width: 375px; height: 350px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
+                        <span class="card mb-2 p-3" style="width: 375px; height: 353px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
                         <!-- 가격 -->
-                        <span class="mb-2" type="text" th:text="'가격: ' + ${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span>
+                        <span class="mb-2" th:text="'가격: ' + ${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span>
                         <!-- 남은 개수 -->
-                        <span class="mb-2" type="text" th:text="'남은 개수: ' + ${postDTO.itemDTO.quantity}"></span>
-                        <span th:if="${postDTO.itemDTO.quantity != 0}">
-                            <button class="btn btn-sm btn-outline-secondary p-2" sec:authorize="isAuthenticated()"
+                        <div class="mb-2" th:utext="|남은 개수: ${postDTO.itemDTO.quantity}|">남은 개수:&nbsp;</div>
+                        <div class="d-flex align-items-center" th:if="${postDTO.itemDTO.quantity != 0}">
+                            <button id="decrement" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center me-1" style="width: 21px; height: 21px;">-</button>
+                            <div id="count">1</div>
+                            <button id="increment" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" style="width: 21px; height: 21px;">+</button>
+                            <button class="btn btn-sm btn-outline-secondary ms-2 p-1" sec:authorize="isAuthenticated()"
                                                                                  id="addBucket"
                                                                                  th:data-itemid="${postDTO.itemDTO.itemId}"
                                                                                  th:data-customernickname="${customerNickname}"
                                                                                  onclick="addBucket()">장바구니 담기</button>
-                        </span>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-end mt-2">
@@ -174,6 +177,27 @@
     </div>
 
     <script layout:fragment="script" type='text/javascript'>
+        // 장바구니에 담을 수량
+        const count = document.getElementById('count');
+        const decrementBtn = document.getElementById('decrement');
+        const incrementBtn = document.getElementById('increment');
+        const maxCount = "[[${postDTO.itemDTO.quantity}]]";
+
+        // -1
+        decrementBtn.addEventListener('click', () => {
+            let currentValue = parseInt(count.textContent, 10);
+            if (currentValue > 0) {
+                count.textContent = currentValue - 1;
+            }
+        });
+
+        // +1
+        incrementBtn.addEventListener('click', () => {
+            let currentValue = parseInt(count.textContent, 10);
+            if(maxCount > count.textContent){
+                count.textContent = currentValue + 1;
+            }
+        });
 
         // 페이지 로드시 Post 별점 색칠
         document.addEventListener("DOMContentLoaded", function() {
@@ -293,9 +317,10 @@
             const requestData = {
                 itemId: itemId,
                 customerNickname: customerNickname,
+                quantity: count.textContent
             };
 
-            fetch('/bucket/' + itemId + '/add', {
+            fetch('api/bucket/' + itemId + '/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -30,6 +30,7 @@ public class ItemService {
     
     public void addItem(ItemDTO itemDTO){
         Item item = new Item();
+        item.setFilePath(itemDTO.getFilePath());
         item.setItemName(itemDTO.getItemName());
         item.setPrice(itemDTO.getPrice());
         item.setQuantity(itemDTO.getQuantity());

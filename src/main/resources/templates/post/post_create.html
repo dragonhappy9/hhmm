@@ -23,7 +23,7 @@
                             <tr>
                                 <td>
                                     <input type="file" class="form-control" onchange="previewMedia(event)">
-                                    <input type="text" style="display: none;" id="filePath" name="filePath" th:value="|${postDTO.filePath != null ? postDTO.filePath : ''}|">
+                                    <input type="text" style="display: none;" id="filePath" name="itemDTO.filePath" th:value="|${postDTO.itemDTO.filePath != null ? postDTO.itemDTO.filePath : ''}|">
                                 </td>
                             </tr>
                             <tr>

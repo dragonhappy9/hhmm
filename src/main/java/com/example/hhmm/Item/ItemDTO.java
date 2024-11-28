@@ -1,5 +1,6 @@
 package com.example.hhmm.Item;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -26,10 +27,14 @@ public class ItemDTO {
     @NotNull(message = "수량은 0이상이어야 합니다.")
     private Integer quantity;
 
+    @Column(nullable = true)
+    private String filePath;
+
     public ItemDTO(Item item){
         this.itemId = item.getItemId();
         this.itemName = item.getItemName();
         this.price = item.getPrice();
         this.quantity = item.getQuantity();
+        this.filePath = item.getFilePath();
     }
 }

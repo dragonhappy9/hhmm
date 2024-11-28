@@ -57,9 +57,6 @@ public class Post {
     @Column(nullable = false)
     private float starpoint;
 
-    @Column(nullable = true)
-    private String filePath;
-
     // 부모 Entity의 삭제 영속성을 상속하여 자동으로 자식 Entity를 삭제, Post를 읽어올때 Comment들도 읽어오도록 변경
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)     
     @JoinColumn(name = "post_id")
@@ -79,8 +76,6 @@ public class Post {
         this.nickname = postDTO.getNickname();
         this.title = postDTO.getTitle();
         this.content = postDTO.getContent();
-        this.filePath = (postDTO.getFilePath() == null || postDTO.getFilePath().isEmpty())
-            ? "등록된 파일이 없습니다." : postDTO.getFilePath();
         if (postDTO.getItemDTO() != null) {
             this.item = new Item(postDTO.getItemDTO());
         }

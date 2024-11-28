@@ -1,0 +1,73 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <div class="card mb-3 p-3" th:each="bucketItemDTO : ${bucketItemDTOs}">
+        <div class="d-flex">
+            <div class="me-3">
+                <div class="d-flex">
+                    <div>담은 상품 수량:&nbsp;</div>
+                    <div class="d-flex align-items-center">
+                        <button th:id="|decrement-${bucketItemDTO.id}|" 
+                                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
+                                style="width: 21px; height: 21px;">-</button>
+                        <div th:id="|quantity-${bucketItemDTO.id}|" 
+                             th:utext="${bucketItemDTO.quantity}"></div>
+                        <button th:id="|increment-${bucketItemDTO.id}|" 
+                                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
+                                style="width: 21px; height: 21px;">+</button>
+                    </div>
+                </div>
+                <div class="card my-2 px-1" style="width: 300px; height: 300px;">
+                    <img th:src="@{|/file_path/${bucketItemDTO.itemDTO.filePath}|}" 
+                         style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+            </div>
+            <div>
+                <div class="mb-2" th:utext="|상품 이름: ${bucketItemDTO.itemDTO.itemName}|"></div>
+                <div class="mb-2" th:utext="|상품 가격: ${bucketItemDTO.itemDTO.price}|"></div>
+                <div class="d-flex">남은 상품 수량:&nbsp;
+                    <div th:id="|maxQuantity-${bucketItemDTO.id}|" 
+                    class="mb-2" th:utext="${bucketItemDTO.itemDTO.quantity}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3 p-3">
+        <button class="btn btn-sm btn-outline-secondary p-2">구매하기</button>
+    </div>
+</div>
+
+<script layout:fragment="script" type="text/javascript" th:inline="javascript">
+    // 모든 bucketItemDTO의 정보를 가져와서 리스너를 동적으로 등록
+    document.addEventListener('DOMContentLoaded', () => {
+        // 아이템 정보를 반복적으로 처리
+        const bucketItems = /*[[${bucketItemDTOs}]]*/ [];// Thymeleaf에서 전달된 데이터를 자바스크립트로 변환
+
+        bucketItems.forEach(bucketItemDTO => {
+            const id = bucketItemDTO.id.bucketId + '-' + bucketItemDTO.id.itemId;
+
+            // 고유 ID로 버튼과 수량 요소 가져오기
+            const decrementBtn = document.getElementById(`decrement-${id}`);
+            const incrementBtn = document.getElementById(`increment-${id}`);
+            const quantityDiv = document.getElementById(`quantity-${id}`);
+            const maxQuantityDiv = document.getElementById(`maxQuantity-${id}`);
+            const maxQuantity = parseInt(maxQuantityDiv.textContent, 10);
+
+            // - 버튼 클릭 리스너 등록
+            decrementBtn.addEventListener('click', () => {
+                let currentValue = parseInt(quantityDiv.textContent, 10);
+                if (currentValue > 0) {
+                    quantityDiv.textContent = currentValue - 1;
+                }
+            });
+
+            // + 버튼 클릭 리스너 등록
+            incrementBtn.addEventListener('click', () => {
+                let currentValue = parseInt(quantityDiv.textContent, 10);
+                if (currentValue < maxQuantity) {
+                    quantityDiv.textContent = currentValue + 1;
+                }
+            });
+        });
+    });
+    </script>
+</html>

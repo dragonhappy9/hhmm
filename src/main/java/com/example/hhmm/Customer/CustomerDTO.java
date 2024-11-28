@@ -39,6 +39,8 @@ public class CustomerDTO {
 
     private Bucket bucket;
 
+    private int payMoney;
+
     public CustomerDTO(Customer customer){
         this.name = customer.getName();
         this.password = customer.getPassword();
@@ -47,5 +49,6 @@ public class CustomerDTO {
         this.gender = customer.isGender();
         this.home = customer.getHome();
         this.bucket = customer.getBucket();
+        this.payMoney = customer.getPayMoney();
     }
 }

@@ -1,6 +1,6 @@
 package com.example.hhmm.Bucket;
 
-import com.example.hhmm.Item.Item;
+import com.example.hhmm.Item.ItemDTO;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,16 +11,18 @@ public class BucketItemDTO {
 
     private BucketItemId id;
 
-    private Bucket bucket;
+    private BucketDTO bucketDTO;
 
-    private Item item;
+    private ItemDTO itemDTO;
 
     private int quantity;
 
-    public BucketItemDTO(BucketItem bucketItem){
+    public BucketItemDTO(BucketItem bucketItem, boolean includeBucket){
         this.id = bucketItem.getId();
-        this.bucket = bucketItem.getBucket();
-        this.item = bucketItem.getItem();
+        if (includeBucket) {
+            this.bucketDTO = new BucketDTO(bucketItem.getBucket());
+        }
+        this.itemDTO = new ItemDTO(bucketItem.getItem());
         this.quantity = bucketItem.getQuantity();
     }
 }
