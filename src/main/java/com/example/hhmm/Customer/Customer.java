@@ -65,4 +65,9 @@ public class Customer {
         this.bucket = CustomerDTO.getBucket();
         this.payMoney = CustomerDTO.getPayMoney();
     }
+
+    public String payment(int payMoney, int totalprice){
+        if(payMoney > totalprice) return "결제가 가능합니다.";
+        else return "잔액이 부족합니다.";
+    }
 }

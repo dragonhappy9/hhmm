@@ -3,10 +3,12 @@ package com.example.hhmm.Bucket;
 import com.example.hhmm.Item.ItemDTO;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class BucketItemDTO {
 
     private BucketItemId id;

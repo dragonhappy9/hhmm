@@ -24,7 +24,7 @@ public class Bucket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bucketId;
 
-    @OneToMany(mappedBy = "bucket", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "bucket", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<BucketItem> itemList = new ArrayList<>();
 
     public Bucket(BucketDTO bucketDTO){
@@ -33,7 +33,6 @@ public class Bucket {
     }
     
     public void addBucket(BucketItem bucketItem){
-
         // id가 동일한 객체가 존재하면 bucketItem의 quantity수량을 합치고 기존 아이템을 제거
         for(int i = 0; i < this.itemList.size(); i++){
             if(this.itemList.get(i).getId().equals(bucketItem.getId())){

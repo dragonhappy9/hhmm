@@ -1,5 +1,6 @@
 package com.example.hhmm.Bucket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +39,52 @@ public class BucketService {
 
     public List<BucketItemDTO> getBucketItemList(String customerNickname){
         Customer customer = customerRepository.findByNickname(customerNickname)
-                                .orElseThrow(() -> new DataNotFoundException("Customer not found"));
+                                                .orElseThrow(() -> new DataNotFoundException("Customer not found"));
         BucketDTO bucketDTO = new BucketDTO(customer.getBucket()); 
         List<BucketItemDTO> bucketItemDTOs = bucketDTO.getItemList();
         return bucketItemDTOs;
+    }
+
+    // bucketItemDTO.quantity와 itemDTO.id를 보내왔음
+    public String buyBucketItem(List<BucketItemDTO> bucketItemDTOs, String nickname) {
+        Customer customer = customerRepository.findByNickname(nickname)
+                                                .orElseThrow(()-> new DataNotFoundException("Customer not found"));       
+        
+        int customerMoney = customer.getPayMoney();
+        int totalPrice = 0;
+
+        String result = null;
+
+        Bucket bucket = customer.getBucket();
+        List<BucketItem> bucketItem = bucket.getItemList();
+        List<Item> itemList = new ArrayList<>();
+
+        for (BucketItemDTO bucketItemDTO : bucketItemDTOs) {
+            Optional<Item> item = itemRepository.findById(bucketItemDTO.getItemDTO().getItemId());
+            if(item.isPresent() && item.get().getQuantity() >= bucketItemDTO.getQuantity()){
+                totalPrice += item.get().getPrice() * bucketItemDTO.getQuantity();
+                itemList.add(item.get());
+            }else{
+                return "해당 상품이 품절되었습니다. 상품명: " + item.get().getItemName();
+            }
+        }
+        
+        result = customerMoney >= totalPrice ? customer.payment(customerMoney, totalPrice) : "잔액이 부족합니다.";
+        customer.setPayMoney(customerMoney - totalPrice);
+        customerRepository.save(customer);  // 결제
+
+        for(int i=0; i < bucketItemDTOs.size(); i++){
+            BucketItemDTO bucketItemDTO = bucketItemDTOs.get(i);
+            Item item = itemList.get(i);
+            item.setQuantity(item.getQuantity() - bucketItemDTO.getQuantity());
+            itemRepository.save(item); // 결제된 아이템 수량 빼기
+        }
+
+        for(int i = bucketItemDTOs.size(); i > 0; i--){
+            bucket.removeBucket(bucketItem.get(i-1));
+        }
+        bucketRepository.save(bucket); // 결제한 장바구니 아이템 지우기
+
+        return result;    // 결제가 가능하면 "결제가 가능합니다." 아니면 "잔액이 부족합니다."
     }
 }

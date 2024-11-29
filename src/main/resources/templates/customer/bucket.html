@@ -1,73 +1,87 @@
 <html layout:decorate="~{layout}">
-<div layout:fragment="content" class="container my-3">
-    <div class="card mb-3 p-3" th:each="bucketItemDTO : ${bucketItemDTOs}">
-        <div class="d-flex">
-            <div class="me-3">
-                <div class="d-flex">
-                    <div>담은 상품 수량:&nbsp;</div>
-                    <div class="d-flex align-items-center">
-                        <button th:id="|decrement-${bucketItemDTO.id}|" 
-                                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
-                                style="width: 21px; height: 21px;">-</button>
-                        <div th:id="|quantity-${bucketItemDTO.id}|" 
-                             th:utext="${bucketItemDTO.quantity}"></div>
-                        <button th:id="|increment-${bucketItemDTO.id}|" 
-                                class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
-                                style="width: 21px; height: 21px;">+</button>
+    <div layout:fragment="content" class="container my-3">
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
+    <form action="/bucket/buy" method="post">
+        <!-- 아이템 반복 -->
+        <div class="card mb-3 p-3" th:each="bucketItemDTO, iterStat : ${bucketItemDTOs}">
+            <div class="d-flex">
+                <div class="me-3">
+                    <div class="d-flex">
+                        <div>담은 상품 수량:&nbsp;</div>
+                        <div class="d-flex align-items-center">
+                            <button type="button" th:id="|decrement-${bucketItemDTO.id}|" 
+                                    class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
+                                    style="width: 21px; height: 21px;">-</button>
+                            <!-- 전달할 bucketItemDTO.quantity -->
+                            <input th:id="|quantity-${bucketItemDTO.id}|" th:name="|bucketItemDTOs[${iterStat.index}].quantity|"
+                                    class="border-0 align-items-center" style="max-width: 15px; background-color: white; text-align: center;"
+                                    th:value="${bucketItemDTO.quantity}" readonly>
+                            <button type="button" th:id="|increment-${bucketItemDTO.id}|" 
+                                    class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
+                                    style="width: 21px; height: 21px;">+</button>
+                        </div>
+                    </div>
+                    <div class="card my-2 px-1" style="width: 300px; height: 300px;">
+                        <img th:src="@{|/file_path/${bucketItemDTO.itemDTO.filePath}|}" 
+                            style="width: 100%; height: 100%; object-fit: contain;">
                     </div>
                 </div>
-                <div class="card my-2 px-1" style="width: 300px; height: 300px;">
-                    <img th:src="@{|/file_path/${bucketItemDTO.itemDTO.filePath}|}" 
-                         style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-            </div>
-            <div>
-                <div class="mb-2" th:utext="|상품 이름: ${bucketItemDTO.itemDTO.itemName}|"></div>
-                <div class="mb-2" th:utext="|상품 가격: ${bucketItemDTO.itemDTO.price}|"></div>
-                <div class="d-flex">남은 상품 수량:&nbsp;
-                    <div th:id="|maxQuantity-${bucketItemDTO.id}|" 
-                    class="mb-2" th:utext="${bucketItemDTO.itemDTO.quantity}"></div>
+                <div>
+                    <!-- 전달할 itemDTO.itemId -->
+                    <input type="hidden" th:name="|bucketItemDTOs[${iterStat.index}].itemDTO.itemId|" th:value="${bucketItemDTO.itemDTO.itemId}">
+                    <div class="mb-2" th:utext="|상품 이름: ${bucketItemDTO.itemDTO.itemName}|"></div>
+                    <div class="mb-2" th:utext="|상품 가격: ${#numbers.formatDecimal(bucketItemDTO.itemDTO.price,3,'COMMA', 0, 'POINT')}원|"></div>
+                    <!-- <div class="d-flex">상품 가격:&nbsp;
+                        <input class="border-0 align-items-center mb-2" th:name="|bucketItemDTOs[${iterStat.index}].itemDTO.price|"
+                                th:value="|${#numbers.formatDecimal(bucketItemDTO.itemDTO.price,3,'COMMA', 0, 'POINT')}원|" 
+                                style="max-width: 200px; background-color: white;" readonly>
+                    </div> -->
+                    <div class="d-flex">남은 상품 수량:&nbsp;
+                        <div th:id="|maxQuantity-${bucketItemDTO.id}|" class="mb-2" th:utext="${bucketItemDTO.itemDTO.quantity}"></div>
+                    </div>
                 </div>
             </div>
         </div>
+        <!-- 아이템 반복 끝 -->
+        <!-- 구매하기 -->
+        <div class="card mb-3 p-3">
+            <input type="submit" class="btn btn-sm btn-outline-secondary p-2" value="구매하기"></button>
+        </div>
+    </form>
     </div>
-    <div class="card mb-3 p-3">
-        <button class="btn btn-sm btn-outline-secondary p-2">구매하기</button>
-    </div>
-</div>
 
-<script layout:fragment="script" type="text/javascript" th:inline="javascript">
-    // 모든 bucketItemDTO의 정보를 가져와서 리스너를 동적으로 등록
-    document.addEventListener('DOMContentLoaded', () => {
-        // 아이템 정보를 반복적으로 처리
-        const bucketItems = /*[[${bucketItemDTOs}]]*/ [];// Thymeleaf에서 전달된 데이터를 자바스크립트로 변환
+    <script layout:fragment="script" type="text/javascript" th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const bucketItems = /*[[${bucketItemDTOs}]]*/ [];
 
-        bucketItems.forEach(bucketItemDTO => {
-            const id = bucketItemDTO.id.bucketId + '-' + bucketItemDTO.id.itemId;
+            bucketItems.forEach(bucketItemDTO => {
+                const id = bucketItemDTO.id.bucketId + '-' + bucketItemDTO.id.itemId;
 
-            // 고유 ID로 버튼과 수량 요소 가져오기
-            const decrementBtn = document.getElementById(`decrement-${id}`);
-            const incrementBtn = document.getElementById(`increment-${id}`);
-            const quantityDiv = document.getElementById(`quantity-${id}`);
-            const maxQuantityDiv = document.getElementById(`maxQuantity-${id}`);
-            const maxQuantity = parseInt(maxQuantityDiv.textContent, 10);
+                const decrementBtn = document.getElementById(`decrement-${id}`);
+                const incrementBtn = document.getElementById(`increment-${id}`);
+                const quantityInput = document.getElementById(`quantity-${id}`);
+                const maxQuantity = parseInt(document.getElementById(`maxQuantity-${id}`).value, 10);
 
-            // - 버튼 클릭 리스너 등록
-            decrementBtn.addEventListener('click', () => {
-                let currentValue = parseInt(quantityDiv.textContent, 10);
-                if (currentValue > 0) {
-                    quantityDiv.textContent = currentValue - 1;
-                }
-            });
+                // 버튼 클릭 이벤트 리스너
+                const updateQuantity = (delta) => {
+                    let currentQuantity = parseInt(quantityInput.value, 10) || 0;
 
-            // + 버튼 클릭 리스너 등록
-            incrementBtn.addEventListener('click', () => {
-                let currentValue = parseInt(quantityDiv.textContent, 10);
-                if (currentValue < maxQuantity) {
-                    quantityDiv.textContent = currentValue + 1;
-                }
+                    if (delta === -1 && currentQuantity > 0) {
+                        currentQuantity--;
+                    } else if (delta === 1 && currentQuantity < maxQuantity) {
+                        currentQuantity++;
+                    }
+
+                    quantityInput.value = currentQuantity;
+                };
+
+                decrementBtn.addEventListener('click', () => updateQuantity(-1));
+                incrementBtn.addEventListener('click', () => updateQuantity(1));
+
+
             });
         });
-    });
     </script>
 </html>

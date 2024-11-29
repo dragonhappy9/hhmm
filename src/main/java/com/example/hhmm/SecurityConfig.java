@@ -28,7 +28,8 @@ public class SecurityConfig {
                 
             .csrf((csrf)->csrf
                 .ignoringRequestMatchers(new AntPathRequestMatcher("/posts/uploadFile"),
-                                            new AntPathRequestMatcher("/posts/api/bucket/*/add")))
+                                            new AntPathRequestMatcher("/posts/api/bucket/*/add"),
+                                            new AntPathRequestMatcher("/bucket/buy")))
                 .headers((headers) -> headers
                     .addHeaderWriter(new XFrameOptionsHeaderWriter(
                         XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
