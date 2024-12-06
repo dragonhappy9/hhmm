@@ -1,0 +1,106 @@
+<html layout:decorate="~{layout}">
+    <div layout:fragment="content" class="container my-3">
+        <br>
+        <div class="d-flex mb-1">
+            <button class="nav-link" onclick="showReceivedMessages()">받은 쪽지함
+                <span class="badge bg-secondary" th:text="${#lists.size(receivedMessageDTOs)}"></span>
+            </button>&nbsp;|&nbsp;
+            <button class="nav-link" onclick="showSentMessages()">보낸 쪽지함
+                <span class="badge bg-secondary" th:text="${#lists.size(sendedMessageDTOs)}"></span>
+            </button>
+        </div>
+        <form th:action="@{|/message/delete|}" method="post">
+            <div class="d-flex">
+                <a class="nav-link" th:href="@{/message/create}">작성하기</a>&nbsp;|&nbsp;
+                <input type="submit" class="nav-link" value="삭제하기" onclick="deleteConfirm()">
+            </div>
+            <hr>
+            <!-- 받은 쪽지함 영역 -->
+            <div id="receiveDiv" class="card mb-3 p-3" style="display: block;" >
+                <div class="d-flex mb-1 delete-receive" th:each="messageDTO : ${receivedMessageDTOs}">
+                    <div class="me-2">
+                        <input type="checkbox" class="delete-checkbox" th:value="${messageDTO.id}" unchecked>
+                    </div>
+                    <div>
+                        <a class="nav-link me-3" th:href="@{/customer/detail}" th:text="${messageDTO.sender}"></a>
+                    </div>
+                    <div>
+                        <a class="nav-link" th:href="@{|/message/${messageDTO.id}|}" th:text="${messageDTO.title}"></a>
+                    </div>
+                </div>
+            </div>
+            <!-- 보낸 쪽지함 영역 -->
+            <div id="sendDiv" class="card mb-3 p-3" style="display: none;">
+                <div class="d-flex mb-1 delete-send" th:each="messageDTO : ${sendedMessageDTOs}">
+                    <div class="me-2">
+                        <input type="checkbox" class="delete-checkbox" th:value="${messageDTO.id}" unchecked>
+                    </div>
+                    <div>
+                        <a class="nav-link me-3" th:href="@{/customer/detail}" th:text="${messageDTO.sender}"></a>
+                    </div>
+                    <div>
+                        <a class="nav-link" th:href="@{|/message/${messageDTO.id}|}" th:text="${messageDTO.title}"></a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</html>
+
+<script layout:fragment="script" type="text/javascript">
+    
+    // 삭제 요청
+    function deleteConfirm() {
+
+        event.preventDefault();
+
+        //체크된 checkbox를 찾음
+        const selectedIds = [];
+        const checkboxes = document.querySelectorAll('.delete-checkbox');
+
+        // 선택된 메시지 ID를 배열에 추가
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selectedIds.push(checkbox.value); 
+            }
+        });
+
+        // 선택된게 없을 시
+        if (selectedIds.length === 0) {
+            alert("삭제할 메시지를 선택해주세요.");
+            return;
+        }
+        // 선택된게 있다면 삭제할지 여부묻기
+        if (!confirm("정말 삭제하시겠습니까?")) {
+            return; 
+        }
+
+        fetch('/api/message', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(selectedIds),
+            })
+        .then(response => {
+            if (response.ok) {
+                alert('삭제 성공');
+                location.reload();
+            } else {
+                alert('삭제 실패');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+        
+    }
+
+    // 받은 쪽지함을 보여주는 함수
+    function showReceivedMessages() {
+        document.getElementById('receiveDiv').style.display = 'block';
+        document.getElementById('sendDiv').style.display = 'none';
+    }
+
+    // 보낸 쪽지함을 보여주는 함수
+    function showSentMessages() {
+        document.getElementById('receiveDiv').style.display = 'none';
+        document.getElementById('sendDiv').style.display = 'block';
+    }
+</script>

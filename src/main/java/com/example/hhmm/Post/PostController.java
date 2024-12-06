@@ -79,14 +79,14 @@ public class PostController {
     // Post 생성 폼으로 이동
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
-    public String createForm(Model model, PostDTO postDTO) {
+    public String createForm(PostDTO postDTO) {
         return "post/post_create";
     }
     
     // Post 생성 요청
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public String createPost(Model model, @Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String createPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal CustomUserDetails userDetails) {
         if (bindingResult.hasErrors()) {
             return "post/post_create";
         }

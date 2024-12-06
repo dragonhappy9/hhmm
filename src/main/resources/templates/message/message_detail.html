@@ -1,0 +1,75 @@
+<html layout:decorate="~{layout}">
+    <div layout:fragment="content" class="container">
+        <div class="justify-content-center mb-3 p-3" th:object="${messageDTO}">
+            <!-- 에러 메시지 출력 -->
+            <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
+            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                th:if="${#authentication.getPrincipal().getNickname() != messageDTO.sender}" 
+                onclick="createMessage()">
+                <a class="nav-link" href="#">답장</a>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deleteMessage()"><a class="nav-link" href="#">삭제</a></button>
+            <hr>
+            <div class="card p-3">
+                <div class="ms-3 mb-2"><b>[[${messageDTO.title}]]</b></div>
+                <div class="d-flex align-items-center ms-3 mb-2">
+                    <div class="me-2" style="min-width: 70px;">보낸사람</div>
+                    <div class="form-control ps-2 py-0" style="max-width: 300px; background-color: #C8FFFF;">[[${messageDTO.sender}]]</div>
+                </div>
+                <div class="d-flex align-items-center ms-3 mb-1">
+                    <div class="me-2" style="min-width: 70px;">받는사람</div>
+                    <div class="form-control ps-2 py-0" style="max-width: 300px; background-color: #C8FFFF;">[[${messageDTO.receiver}]]</div>
+                </div>
+                <hr class="mx-3">
+                <div class="card-body pt-1">
+                    <textarea class="form-control" rows="10" style="resize: none; background-color: white;" th:utext="${messageDTO.content}" disabled></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>
+<script layout:fragment="script" type="text/javascript">
+
+    function createMessage(){
+        // 답장할때 sender는 되돌려 받을 대상 즉 receiver
+        const receiver = `[[${messageDTO.sender}]]`
+
+        fetch('/message/create?receiver=' + receiver,{
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => window.location.href = response.url)
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function deleteMessage() {
+
+        const messageId = `[[${messageDTO.id}]]`;
+
+        if (confirm("정말 삭제하시겠습니까?")) {
+            fetch('/api/message/' + messageId, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("삭제 성공!");
+                    window.location.href = '/message';
+                } else {
+                    alert("삭제 실패...");
+                }
+            })
+            .catch(error => {
+                console.error("삭제 중 오류 발생:", error);
+                alert("서버와 연결할 수 없습니다.");
+            });
+        }
+    }
+
+</script>
