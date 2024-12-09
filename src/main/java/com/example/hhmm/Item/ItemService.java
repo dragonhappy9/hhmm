@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Exception.DataNotFoundException;
 
@@ -15,10 +16,12 @@ public class ItemService {
     
     private final ItemRepository itemRepository;
 
+    @Transactional(readOnly = true)
     public List<Item> getList(){
         return this.itemRepository.findAll();
     }
     
+    @Transactional(readOnly = true)
     public Item getItem(Long id){
         Optional<Item> item = this.itemRepository.findById(id);
         if (item.isPresent()) {
@@ -28,6 +31,7 @@ public class ItemService {
         }
     }
     
+    @Transactional
     public void addItem(ItemDTO itemDTO){
         Item item = new Item();
         item.setFilePath(itemDTO.getFilePath());

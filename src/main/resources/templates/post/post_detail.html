@@ -26,7 +26,7 @@
                         <div class="mb-2" th:utext="|남은 개수: ${postDTO.itemDTO.quantity}|">남은 개수:&nbsp;</div>
                         <div class="d-flex align-items-center" th:if="${postDTO.itemDTO.quantity != 0}">
                             <button id="decrement" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center me-1" style="width: 21px; height: 21px;">-</button>
-                            <div id="count">1</div>
+                            <div id="quantity">1</div>
                             <button id="increment" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" style="width: 21px; height: 21px;">+</button>
                             <button class="btn btn-sm btn-outline-secondary ms-2 p-1" sec:authorize="isAuthenticated()"
                                                                                  id="addBucket"
@@ -59,7 +59,7 @@
                                     <td class="text-start py-2">별점</td>
                                     <td>&nbsp;:&nbsp;</td>
                                     <td>
-                                        <div id="post-starpoint" class="starpoint" th:data-post-starpoint="${postDTO.starpoint}">
+                                        <div id="starpoint-post" class="starpoint" th:data-post-starpoint="${postDTO.starpoint}">
                                             <div class="star"></div>
                                             <div class="star"></div>
                                             <div class="star"></div>
@@ -116,7 +116,7 @@
                                 <td class="text-start py-2">별점</td>
                                 <td>&nbsp;:&nbsp;</td>
                                 <td>
-                                    <div th:id="'starpoint-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}">
+                                    <div th:id="'starpoint-comment-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}">
                                         <div class="star" data-value="1"></div>
                                         <div class="star" data-value="2"></div>
                                         <div class="star" data-value="3"></div>
@@ -162,7 +162,7 @@
         <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-            <div id="starpoint" class="starpoint mb-3" sec:authorize="isAuthenticated()">
+            <div id="starpoint-new" class="starpoint mb-3" sec:authorize="isAuthenticated()">
                 <div class="star" data-value="1"></div>
                 <div class="star" data-value="2"></div>
                 <div class="star" data-value="3"></div>
@@ -177,35 +177,40 @@
     </div>
 
     <script layout:fragment="script" type='text/javascript'>
-        // 장바구니에 담을 수량
-        const count = document.getElementById('count');
-        const decrementBtn = document.getElementById('decrement');
-        const incrementBtn = document.getElementById('increment');
-        const maxCount = "[[${postDTO.itemDTO.quantity}]]";
 
-        // -1
-        decrementBtn.addEventListener('click', () => {
-            let currentValue = parseInt(count.textContent, 10);
-            if (currentValue > 0) {
-                count.textContent = currentValue - 1;
-            }
-        });
-
-        // +1
-        incrementBtn.addEventListener('click', () => {
-            let currentValue = parseInt(count.textContent, 10);
-            if(maxCount > count.textContent){
-                count.textContent = currentValue + 1;
-            }
-        });
-
-        // 페이지 로드시 Post 별점 색칠
+        // 페이지 로드시 Post 별점 색칠 및 댓글 별점 리스너 등록
         document.addEventListener("DOMContentLoaded", function() {
-            const postStarpointElement = document.querySelector('#post-starpoint');
-            if (postStarpointElement) {
-                const postStarpoint = postStarpointElement.dataset.postStarpoint;
-                const stars = postStarpointElement.getElementsByClassName('star');
-                
+            // 모든 starpoint
+            const starpointElements = document.querySelectorAll('.starpoint');
+
+            // starpoint-post 추출
+            const postStarpointElement = Array.from(starpointElements).filter(element =>
+                element.id.startsWith("starpoint-post")     
+            );
+            
+            // starpoint-comment-id 추출
+            const commentStarpointElements = Array.from(starpointElements).filter(element =>
+                element.id.startsWith("starpoint-comment-")
+            );
+
+            // starpoint-new 추출
+            const newStarpointElement = Array.from(starpointElements).filter(element =>
+                element.id.startsWith("starpoint-new")
+            );
+            
+            // 후기 작성시 클릭할 별들
+            if (newStarpointElement.length > 0) {
+                const stars = newStarpointElement[0].getElementsByClassName('star');
+                // 전송할 comment-starpoint
+                const starpointComment = document.getElementById('comment-starpoint');
+                // stars에 리스너를 등록
+                initializeStarClick(stars, starpointComment);
+            }
+            
+            // post 별점은 색칠만!
+            if (postStarpointElement[0]) {
+                const postStarpoint = postStarpointElement[0].dataset.postStarpoint;
+                const stars = postStarpointElement[0].getElementsByClassName('star');
                 const totalStars = 5;
                 const fullStars = Math.floor(postStarpoint);
                 const decimalPart = postStarpoint - fullStars;
@@ -214,7 +219,6 @@
                     stars[i].style.background = 'gold';
                 }
 
-                // 별점의 별을 퍼센테이지로 채우기
                 if (decimalPart > 0) {
                     const partialStar = stars[fullStars];
                     partialStar.style.background = `linear-gradient(to right, gold ${decimalPart * 100}%, #d3d3d3 ${decimalPart * 100}%)`;
@@ -224,30 +228,15 @@
                     stars[i].style.background = '#d3d3d3';
                 }
             }
-        });
-        
-        // 페이지 로드시 댓글 색칠, 리스너
-        document.addEventListener("DOMContentLoaded", function() {
-            const starpointElements = document.querySelectorAll('.starpoint');
-            const commentDivs = Array.from(starpointElements).filter(element =>
-                element.id.startsWith("starpoint-")     // starpoint-로 시작하는 영역 추출 나의 경우엔 Comment영역만 존재
-            );
 
-            commentDivs.forEach(starpointElement => {
+            // 초기 댓글 색칠
+            commentStarpointElements.forEach(starpointElement => {
                 const commentId = starpointElement.id.split('-')[1];    // starpoint = [0] commentDTO.commentId = [1]
                 const starpoint = parseFloat(starpointElement.getAttribute('data-starpoint')) || 0;
                 const stars = starpointElement.getElementsByClassName('star')
-
                 const starpointDiv = document.getElementById('starpoint-' + commentId);
-    
-                setRating(starpoint, stars) // commnetDTO에 가지고 있던 별점
+                setRating(starpoint, stars) // commentDTO에 가지고 있던 별점
             });
-
-            const starpointDiv = document.getElementById('starpoint');
-            const stars = starpointDiv.getElementsByClassName('star');
-            const starpointComment = document.getElementById('comment-starpoint');
-            initializeStarClick(stars, starpointComment);
-
         });
 
         // 별점 칠하기
@@ -265,7 +254,7 @@
             }
         }
     
-        // 별클릭시 발동하는 리스너 등록
+        // star 클릭시 댓글의 별점을 칠하고 설정하는 이벤트 등록
         function initializeStarClick(stars, starpointInput) {
             Array.from(stars).forEach(star => {
                 star.addEventListener('click', function(event) {
@@ -274,41 +263,17 @@
                     const clickX = event.clientX - rect.left;
                     const isLeftHalf = clickX < rect.width / 2;
                     const starpoint = starValue - (isLeftHalf ? 0.5 : 0);
-    
                     setRating(starpoint, stars);
                     starpointInput.value = starpoint;
                 });
             });
         }
-    
-        // 수정 버튼 클릭
-        function editComment(commentId) {
-            const commentInput = document.getElementById('comment-content-' + commentId);
-            const editButton = document.getElementById('edit-comment-button-' + commentId);
-            const saveButton = document.getElementById('save-comment-button-' + commentId);
-            const starpointDiv = document.getElementById('starpoint-' + commentId);
-            const stars = starpointDiv.getElementsByClassName('star');
-            const starpointInput = document.getElementById('edit-starpoint-' + commentId);
-    
-            if (commentInput.disabled) {
-                commentInput.disabled = false;
-                editButton.classList.add('d-none');
-                saveButton.classList.remove('d-none');
-                initializeStarClick(stars, starpointInput);
-            }
-        }
-    
-        // 수정 할때 값 복사
-        function copyInput(commentId) {
-            const commentInput = document.getElementById('comment-content-' + commentId);
-            const copyInput = document.getElementById('copy-comment-content-' + commentId);
-            const starpointDiv = document.getElementById('starpoint-' + commentId);
-            const editStarpoint = document.getElementById('edit-starpoint-' + commentId);
-    
-            copyInput.value = commentInput.value;
-            editStarpoint.value = starpointDiv.dataset.starpoint;
-        }
-    
+
+        // 장바구니에 담을 수량
+        const quantity = document.getElementById('quantity');
+        const decrementBtn = document.getElementById('decrement');
+        const incrementBtn = document.getElementById('increment');
+        
         function addBucket(){
             const Bucket = document.getElementById('addBucket');
             const itemId = Bucket.dataset.itemid;
@@ -317,7 +282,7 @@
             const requestData = {
                 itemId: itemId,
                 customerNickname: customerNickname,
-                quantity: count.textContent
+                quantity: quantity.textContent
             };
 
             fetch('api/bucket/' + itemId + '/add', {
@@ -338,6 +303,51 @@
                 alert('장바구니에 담지 못했습니다...');
                 console.error('바구니에 담지 못한 사유: ', error);
             });
+        }
+
+        // quantity - 1
+        decrementBtn.addEventListener('click', () => {
+            let currentValue = parseInt(quantity.textContent, 10);
+            if (currentValue > 0) {
+                quantity.textContent = currentValue - 1;
+            }
+        });
+
+        // quantity + 1
+        incrementBtn.addEventListener('click', () => {
+            const maxQuantity = "[[${postDTO.itemDTO.quantity}]]";
+            let currentValue = parseInt(quantity.textContent, 10);
+            if(parseInt(maxQuantity) > quantity.textContent){
+                quantity.textContent = currentValue + 1;
+            }
+        });
+    
+        // 수정 버튼 클릭
+        function editComment(commentId) {
+            const commentInput = document.getElementById('comment-content-' + commentId);
+            const editButton = document.getElementById('edit-comment-button-' + commentId);
+            const saveButton = document.getElementById('save-comment-button-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const stars = starpointDiv.getElementsByClassName('star');
+            const starpointInput = document.getElementById('edit-starpoint-' + commentId);
+    
+            if (commentInput.disabled) {
+                commentInput.disabled = false;
+                editButton.classList.add('d-none');
+                saveButton.classList.remove('d-none');
+                initializeStarClick(stars, starpointInput);
+            }
+        }
+    
+        // 수정 할때 input type=hidden에 값 복사
+        function copyInput(commentId) {
+            const commentInput = document.getElementById('comment-content-' + commentId);
+            const copyInput = document.getElementById('copy-comment-content-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const editStarpoint = document.getElementById('edit-starpoint-' + commentId);
+    
+            copyInput.value = commentInput.value;
+            editStarpoint.value = starpointDiv.dataset.starpoint;
         }
     </script>
 </html>

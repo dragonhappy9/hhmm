@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
     private final PostRepository postRepository;
 
+    @Transactional(readOnly = true)
     private Specification<Post> search(String kw) {
         return new Specification<>() {
             private static final long serialVersionUID = 1L;
@@ -111,7 +112,7 @@ public class PostService {
     }
 
     // Post Read
-    @Transactional
+    @Transactional(readOnly = true)
     public PostDTO readPost(Long postId) {
         Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));

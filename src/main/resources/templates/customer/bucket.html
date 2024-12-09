@@ -16,7 +16,7 @@
                                     style="width: 21px; height: 21px;">-</button>
                             <!-- 전달할 bucketItemDTO.quantity -->
                             <input th:id="|quantity-${bucketItemDTO.id}|" th:name="|bucketItemDTOs[${iterStat.index}].quantity|"
-                                    class="border-0 align-items-center" style="max-width: 15px; background-color: white; text-align: center;"
+                                    class="border-0 align-items-center" style="max-width: 25px; background-color: white; text-align: center;"
                                     th:value="${bucketItemDTO.quantity}" readonly>
                             <button type="button" th:id="|increment-${bucketItemDTO.id}|" 
                                     class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" 
@@ -62,7 +62,7 @@
                 const decrementBtn = document.getElementById(`decrement-${id}`);
                 const incrementBtn = document.getElementById(`increment-${id}`);
                 const quantityInput = document.getElementById(`quantity-${id}`);
-                const maxQuantity = parseInt(document.getElementById(`maxQuantity-${id}`).value, 10);
+                const maxQuantity = document.getElementById(`maxQuantity-${id}`);
 
                 // 버튼 클릭 이벤트 리스너
                 const updateQuantity = (delta) => {
@@ -70,7 +70,7 @@
 
                     if (delta === -1 && currentQuantity > 0) {
                         currentQuantity--;
-                    } else if (delta === 1 && currentQuantity < maxQuantity) {
+                    } else if (delta === 1 && currentQuantity < parseInt(maxQuantity.innerText)) {
                         currentQuantity++;
                     }
 

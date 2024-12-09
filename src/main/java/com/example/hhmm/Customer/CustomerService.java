@@ -2,6 +2,7 @@ package com.example.hhmm.Customer;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.hhmm.Bucket.Bucket;
 
@@ -14,6 +15,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     
+    @Transactional
     public void create(CustomerDTO customerDTO){
         Customer customer = new Customer(customerDTO);
         Bucket bucket = new Bucket();
