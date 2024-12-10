@@ -3,10 +3,10 @@
         <br>
         <div class="d-flex mb-1">
             <button class="nav-link" onclick="showReceivedMessages()">받은 쪽지함
-                <span class="badge bg-secondary" th:text="${#lists.size(receivedMessageDTOs)}"></span>
+                <span class="badge bg-primary" th:text="${#lists.size(receivedMessageDTOs)}"></span>
             </button>&nbsp;|&nbsp;
             <button class="nav-link" onclick="showSentMessages()">보낸 쪽지함
-                <span class="badge bg-secondary" th:text="${#lists.size(sendedMessageDTOs)}"></span>
+                <span class="badge bg-primary" th:text="${#lists.size(sendedMessageDTOs)}"></span>
             </button>
         </div>
         <form th:action="@{|/message/delete|}" method="post">
@@ -16,7 +16,7 @@
             </div>
             <hr>
             <!-- 받은 쪽지함 영역 -->
-            <div id="receiveDiv" class="card mb-3 p-3" style="display: block;" >
+            <div id="receiveDiv" class="card card-border mb-3 p-3" style="display: block;" >
                 <div class="d-flex mb-1 delete-receive" th:each="messageDTO : ${receivedMessageDTOs}">
                     <div class="me-2">
                         <input type="checkbox" class="delete-checkbox" th:value="${messageDTO.id}" unchecked>
@@ -30,7 +30,7 @@
                 </div>
             </div>
             <!-- 보낸 쪽지함 영역 -->
-            <div id="sendDiv" class="card mb-3 p-3" style="display: none;">
+            <div id="sendDiv" class="card card-border mb-3 p-3" style="display: none;">
                 <div class="d-flex mb-1 delete-send" th:each="messageDTO : ${sendedMessageDTOs}">
                     <div class="me-2">
                         <input type="checkbox" class="delete-checkbox" th:value="${messageDTO.id}" unchecked>

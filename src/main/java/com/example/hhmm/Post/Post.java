@@ -34,9 +34,6 @@ public class Post {
 
     @Column(nullable = false, length = 30)
     private String nickname;
-
-    @Column(length = 50, nullable = false)
-    private String title;
     
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
@@ -74,7 +71,6 @@ public class Post {
 
     public Post (PostDTO postDTO){
         this.nickname = postDTO.getNickname();
-        this.title = postDTO.getTitle();
         this.content = postDTO.getContent();
         if (postDTO.getItemDTO() != null) {
             this.item = new Item(postDTO.getItemDTO());

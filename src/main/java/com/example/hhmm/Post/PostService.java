@@ -46,12 +46,14 @@ public class PostService {
                     query.distinct(true);  // query가 null이 아닐 때만 중복 제거 설정
                 }
                 Join<Post, Comment> a = q.join("comments", JoinType.LEFT);
+                Join<Post, Item> b = q.join("item", JoinType.LEFT);
 
-                return cb.or(cb.like(q.get("title"), "%" + kw + "%"), // 제목 
+                return cb.or(
                         cb.like(q.get("content"), "%" + kw + "%"),      // 내용 
                         cb.like(q.get("nickname"), "%" + kw + "%"),    // 질문 작성자 
                         cb.like(a.get("content"), "%" + kw + "%"),      // 답변 내용 
-                        cb.like(a.get("nickname"), "%" + kw + "%"));   // 답변 작성자 
+                        cb.like(a.get("nickname"), "%" + kw + "%"),   // 답변 작성자
+                        cb.like(b.get("itemName"), "%" + kw + "%"));      // Item 이름
             }
         };
     }
@@ -61,7 +63,7 @@ public class PostService {
     public Page<PostDTO> getPostList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("regDate"));
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 8, Sort.by(sorts));
         Specification<Post> spec = search(kw);
         Page<Post> posts = postRepository.findAll(spec, pageable);
         return posts.map(PostDTO::new);
@@ -156,7 +158,6 @@ public class PostService {
         Post post = this.postRepository.findById(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found")); 
         Item item = post.getItem();
-        post.setTitle(postDTO.getTitle());
         post.setContent(postDTO.getContent());
         post.setUpdateDate(LocalDateTime.now());
         item.setItemName(postDTO.getItemDTO().getItemName());

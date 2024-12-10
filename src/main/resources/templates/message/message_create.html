@@ -4,27 +4,27 @@
             <form action="/message/create" th:object="${messageDTO}" method="post">
                 <!-- 에러 메시지 출력 -->
                 <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-                <h6 class="my-3 border-bottom pb-2"><b>쪽지쓰기</b></h6>
+                <h6 class="my-3"><b>쪽지쓰기</b></h6>
                 <input type="hidden" name="sender" th:value="${messageDTO.sender}" class="form-control" readonly>
-                <input type="submit" class="btn btn-sm btn-outline-secondary" value="보내기">
-                <hr>
+                <input type="submit" class="btn btn-sm btn-outline-primary" value="보내기">
+                <hr class="hr-border">
                 <table class="table table-borderless">
                     <tbody>
                         <tr>
                             <td style="width: 10%; min-width: 90px;"><label for="receiver" class="form-label">받는사람</label></td>
-                            <td style="width: 90%;">
+                            <td>
                                 <input type="text" name="receiver" id="receiver" class="form-control underline-input" th:value="${messageDTO.receiver}">
                             </td>
                         </tr>
                         <tr>
                             <td style="width: 10%; min-width: 90px;"><label for="title" class="form-label">제목</label></td>
-                            <td style="width: 90%;">
+                            <td>
                                 <input type="text" name="title" id="title" class="form-control underline-input" th:value="${messageDTO.title}">
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <textarea name="content" id="content" class="form-control" rows="10" style="resize: none;" th:text="${messageDTO.content}"></textarea>
+                <textarea name="content" id="content" class="form-control card-border" rows="10" style="resize: none;" th:text="${messageDTO.content}"></textarea>
             </form>
         </div>
     </div>

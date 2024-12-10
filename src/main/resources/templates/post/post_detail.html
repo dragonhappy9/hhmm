@@ -1,15 +1,13 @@
 <html layout:decorate="~{layout}">
-    <div layout:fragment="content" class="container my-3">
+    <div layout:fragment="content" class="container my-3 p-3">
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <!-- 제목 -->
-        <h2 class="border-bottom py-2" th:text="${postDTO.title}"></h2>
-        <div class="card my-3">
+        <div class="card card-border my-3">
             <div class="card-body">
                 <!-- 이미지 -->
                 <div class="d-flex">
-                    <div class="card me-3" style="width: 500px; height: 500px;">
+                    <div class="card card-border justify-content-center me-3 p-3" style="width: 500px; height: 500px;">
                         <span th:if="${postDTO.itemDTO.quantity == 0}" style="width: 50px; height: 50px;">
                             <img src="../event/soldout.png" style="width: 100%; height: 100%;">
                         </span>
@@ -17,18 +15,18 @@
                     </div>
                     <div class="d-flex flex-column">
                         <!-- 상품명 -->
-                        <span class="mb-2 mt-1" th:text="'상품명: ' + ${postDTO.itemDTO.itemName}"></span>
+                        <span class="mb-2 mt-1"><h5><b>[[${postDTO.itemDTO.itemName}]]</b></h5></span>
                         <!-- 내용 -->
-                        <span class="card mb-2 p-3" style="width: 375px; height: 353px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
+                        <span class="card card-border mb-2 p-3" style="width: 375px; height: 353px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
                         <!-- 가격 -->
-                        <span class="mb-2" th:text="'가격: ' + ${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span>
+                        <b class="mb-1"><span th:text="${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span></b>
                         <!-- 남은 개수 -->
                         <div class="mb-2" th:utext="|남은 개수: ${postDTO.itemDTO.quantity}|">남은 개수:&nbsp;</div>
                         <div class="d-flex align-items-center" th:if="${postDTO.itemDTO.quantity != 0}">
-                            <button id="decrement" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center me-1" style="width: 21px; height: 21px;">-</button>
+                            <button id="decrement" class="btn btn-sm card-border d-flex align-items-center justify-content-center me-1" style="width: 21px; height: 21px;">-</button>
                             <div id="quantity">1</div>
-                            <button id="increment" class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center mx-1" style="width: 21px; height: 21px;">+</button>
-                            <button class="btn btn-sm btn-outline-secondary ms-2 p-1" sec:authorize="isAuthenticated()"
+                            <button id="increment" class="btn btn-sm card-border d-flex align-items-center justify-content-center mx-1" style="width: 21px; height: 21px;">+</button>
+                            <button class="btn btn-sm card-border ms-2 p-1" sec:authorize="isAuthenticated()"
                                                                                  id="addBucket"
                                                                                  th:data-itemid="${postDTO.itemDTO.itemId}"
                                                                                  th:data-customernickname="${customerNickname}"
@@ -74,7 +72,7 @@
                     </div>
                 </div>
                 <div class="d-flex">
-                    <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm btn-outline-secondary me-1"
+                    <a th:href="@{|/posts/${postDTO.postId}/edit|}" class="btn btn-sm card-border me-1"
                         sec:authorize="isAuthenticated()"
                         th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}"
                         th:text="수정"></a>
@@ -82,14 +80,13 @@
                         th:if="${postDTO.nickname != null and #authentication.getPrincipal().getNickname() == postDTO.nickname}">
                         <input type="hidden" name="_method" value="delete" />
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">삭제</button>
+                        <button type="submit" class="btn btn-sm card-border">삭제</button>
                     </form>
                 </div>
             </div>
         </div>
-        <hr>
         <!-- 답변 반복 시작 -->
-        <div class="card mb-3" th:each="commentDTO : ${postDTO.commentDTOs}">
+        <div class="card card-border mb-3" th:each="commentDTO : ${postDTO.commentDTOs}">
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
@@ -133,30 +130,26 @@
                     <!-- 수정 폼 -->
                     <form class="me-1" th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="patch" />
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                         <input type="hidden" th:id="'copy-comment-content-' + ${commentDTO.commentId}" name="content" />
 
                         <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
-                            <button type="button" class="btn btn-sm btn-outline-secondary" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
-                            <button type="submit" class="btn btn-sm btn-outline-secondary d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
+                            <button type="button" class="btn btn-sm card-border" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
+                            <button type="submit" class="btn btn-sm card-border d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
                             <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.commentId}" name="starpoint"></input>
                         </div>
                     </form>
                     <!-- 삭제 폼 -->
                     <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="delete" />
-                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                        
                         <div>
                             <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}">
-                                <button type="submit" class="btn btn-sm btn-outline-secondary">삭제</button>
+                                <button type="submit" class="btn btn-sm card-border">삭제</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <hr>
         <!-- 답변 반복 끝  -->
         <!-- 답변 작성 -->
         <form th:action="@{|/posts/${postDTO.postId}/comments|}" th:object="${commentDTO}" method="post">
@@ -169,10 +162,10 @@
                 <div class="star" data-value="4"></div>
                 <div class="star" data-value="5"></div>
             </div>
-            <textarea sec:authorize="isAnonymous()" th:field="*{content}" class="form-control" rows="10" disabled></textarea>
-            <input type="hidden" name="starpoint" id="comment-starpoint">
-            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
-            <input type="submit" value="후기 등록" class="btn btn-primary my-2">
+            <textarea sec:authorize="isAnonymous()" th:field="*{content}" class="form-control card-border" rows="10" disabled></textarea>
+            <input type="hidden" name="starpoint" id="comment-starpoint" value="0">
+            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control card-border" rows="10"></textarea>
+            <button type="submit" class="btn card-border mt-3">후기 등록</button>
         </form>
     </div>
 
@@ -327,7 +320,7 @@
             const commentInput = document.getElementById('comment-content-' + commentId);
             const editButton = document.getElementById('edit-comment-button-' + commentId);
             const saveButton = document.getElementById('save-comment-button-' + commentId);
-            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-comment-' + commentId);
             const stars = starpointDiv.getElementsByClassName('star');
             const starpointInput = document.getElementById('edit-starpoint-' + commentId);
     
@@ -343,7 +336,7 @@
         function copyInput(commentId) {
             const commentInput = document.getElementById('comment-content-' + commentId);
             const copyInput = document.getElementById('copy-comment-content-' + commentId);
-            const starpointDiv = document.getElementById('starpoint-' + commentId);
+            const starpointDiv = document.getElementById('starpoint-comment-' + commentId);
             const editStarpoint = document.getElementById('edit-starpoint-' + commentId);
     
             copyInput.value = commentInput.value;

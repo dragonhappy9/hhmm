@@ -3,52 +3,58 @@
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <div class="row my-3">
-            <div class="col-6">
-                <a th:href="@{/posts/create}" class="btn btn-primary">상품 등록하기</a>
+        <div class="row mx-1 my-3">
+            <div class="col-7">
+                <a th:if="${#lists.contains(authority, '[ROLE_MM]')}" th:href="@{/posts/create}" class="btn btn-primary">상품 등록하기</a>
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <div class="input-group">
-                    <input type="text" id="search_kw" class="form-control" th:value="${kw}">
-                    <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+                    <input type="text" id="search_kw" class="form-control card-border" th:value="${kw}">
+                    <button class="btn card-border" style="width: 50px; height: 40px;" type="button" id="btn_search"><img src="/icon/search.png" style="width: 100%; height: 100%; object-fit:fill;"></button>
                 </div>
             </div>
         </div>
-        <table class="table">
-            <thead class="table-dark">
-                <tr class="text-center">
-                    <th>상품 번호</th>
-                    <th style="width:50%; text-align:left;">제목</th>
-                    <th>작성 일시</th>
-                    <th>작성자</th>
-                    <th>조회수</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="text-center" th:each="postDTO, loop : ${postDTOs}">
-                    <td th:href="@{|/posts/${postDTO.postId}|}" th:text="${postDTOs.getTotalElements() - (postDTOs.number * postDTOs.size) - loop.index}"></td>
-                    <td class="text-start">
-                        <a th:href="@{|/posts/${postDTO.postId}|}" th:text="${postDTO.title}"></a>
-                    </td>
-                    <td th:text="${#temporals.format(postDTO.regDate, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td th:if="${postDTO.nickname != null}" th:text="${postDTO.nickname}"></td>
-                    <td th:text="${postDTO.viewCount}"></td>
-                </tr>
-            </tbody>
-        </table>
-        <!--<table class="table">
-            <tr>
-                <td>        
-                    <div class="card">
-                        <div class="card-body">
+        <div class="mb-3">
+            <div class="d-flex align-items-center justify-content-center">
+                <h4><b>
+                    HEALTHY HOUSE MARKET
+                </b></h6>
+            </div>
+            <hr class="hr-border mx-3 mb-2">
+        </div>
+        <table class="d-flex justify-content-center m-2 mb-4">
+            <tr th:each="rowIndex : ${#numbers.sequence(0, postDTOs.content.size() / 4)}">
+                <!-- 상품 파일 반복 시작 -->
+                <td class="px-3 py-2" th:each="colIndex : ${#numbers.sequence(0, 3)}" 
+                    th:if="${rowIndex * 4 + colIndex < postDTOs.content.size()}">      
+                    <div class="card card-border mb-2" style="width: 222px; height: 222px;">
+                        <div class="card-body d-flex justify-content-center">
                             <div>
-
+                                <a th:href="@{|/posts/${postDTOs.content[rowIndex * 4 + colIndex].postId}|}">
+                                <img th:src="@{|/file_path/${postDTOs.content[rowIndex * 4 + colIndex].itemDTO.filePath}|}"
+                                     
+                                    alt="상품 이미지 혹은 동영상"
+                                    style="width: 100%; height: 100%; object-fit: contain;">
+                                </a>
                             </div>
                         </div>
                     </div>
+                    <div class="d-flex justify-content-center">
+                        [[${postDTOs.content[rowIndex * 4 + colIndex].itemDTO.itemName}]]
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <b>
+                        [[${#numbers.formatDecimal(postDTOs.content[rowIndex * 4 + colIndex].itemDTO.price, 3, 'COMMA', 0, 'POINT')}]]원
+                        </b>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <i class="bi-star-fill" style="color: gold; font-size: 0.9rem;"></i>
+                        &nbsp;[[${postDTOs.content[rowIndex * 4 + colIndex].starpoint}]]점
+                    </div>
                 </td>
+                <!-- 상품 파일 반복 끝-->
             </tr>
-        </table> -->
+        </table>
         <!-- 페이징처리 시작 -->
         <div th:if="${!postDTOs.isEmpty()}">
             <ul class="pagination justify-content-center">
@@ -74,7 +80,6 @@
             <input type="hidden" id="kw" name="kw" th:value="${kw}">
             <input type="hidden" id="page" name="page" th:value="${postDTOs.number}">
         </form>
-        <!-- <a th:href="@{/posts/create}" class="btn btn-primary">게시글 등록하기</a> -->
     </div>
     <script layout:fragment="script" type='text/javascript'>
         const page_elements = document.getElementsByClassName("page-link");

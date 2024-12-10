@@ -3,14 +3,14 @@
         <div class="justify-content-center mb-3 p-3" th:object="${messageDTO}">
             <!-- 에러 메시지 출력 -->
             <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
-            <button type="button" class="btn btn-sm btn-outline-secondary" 
+            <button type="button" class="btn btn-sm btn-outline-primary" 
                 th:if="${#authentication.getPrincipal().getNickname() != messageDTO.sender}" 
                 onclick="createMessage()">
                 <a class="nav-link" href="#">답장</a>
             </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deleteMessage()"><a class="nav-link" href="#">삭제</a></button>
-            <hr>
-            <div class="card p-3">
+            <button type="button" class="btn btn-sm btn-outline-primary" onclick="deleteMessage()"><a class="nav-link" href="#">삭제</a></button>
+            <hr class="hr-border">
+            <div class="card card-border p-3">
                 <div class="ms-3 mb-2"><b>[[${messageDTO.title}]]</b></div>
                 <div class="d-flex align-items-center ms-3 mb-2">
                     <div class="me-2" style="min-width: 70px;">보낸사람</div>
@@ -20,9 +20,9 @@
                     <div class="me-2" style="min-width: 70px;">받는사람</div>
                     <div class="form-control ps-2 py-0" style="max-width: 300px; background-color: #C8FFFF;">[[${messageDTO.receiver}]]</div>
                 </div>
-                <hr class="mx-3">
+                <hr class="hr-border mx-3">
                 <div class="card-body pt-1">
-                    <textarea class="form-control" rows="10" style="resize: none; background-color: white;" th:utext="${messageDTO.content}" disabled></textarea>
+                    <textarea class="form-control card-border" rows="10" style="resize: none; background-color: white;" th:utext="${messageDTO.content}" disabled></textarea>
                 </div>
             </div>
         </div>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -38,8 +39,15 @@ public class PostController {
     private final PostService postService;
     // Post 전체 불러오기
     @GetMapping
-    public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page, @RequestParam(value = "kw", defaultValue = "") String kw) {
+    public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page, 
+                        @RequestParam(value = "kw", defaultValue = "") String kw,
+                        @AuthenticationPrincipal CustomUserDetails userDetails) {
         Page<PostDTO> postDTOs = this.postService.getPostList(page, kw);
+        if (userDetails != null) {
+            model.addAttribute("authority", userDetails.getAuthorities().toString());
+        }else{
+            model.addAttribute("authority", new ArrayList<>());
+        }
         model.addAttribute("postDTOs", postDTOs);
         model.addAttribute("kw", kw);
         return "post/posts";

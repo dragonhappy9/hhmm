@@ -1,20 +1,35 @@
 <html layout:decorate="~{layout}">
-<div layout:fragment="content" class="container my-3">
-    <form th:action="@{/customer/login}" method="post">
+<div layout:fragment="content" class="container my-3 p-4">
+    <div class="m-3">
+        <h4>로그인</h4>
+    </div>
+    <form th:action="@{/customer/login}" class="card card-border m-3 p-3" method="post">
         <div th:if="${param.error}">
             <div class="alert alert-danger">
                 사용자ID 또는 비밀번호를 확인해 주세요.
             </div>
         </div>
-        <div class="mb-3">
-            <label for="name" class="form-label">사용자ID</label>
-            <input type="text" name="name" id="name" class="form-control">
+        <div class="d-flex p-3 align-items-center">
+            <div class="form-section me-4">
+                <div class="mb-3">
+                    <label for="name" class="form-label">아이디</label>
+                    <input type="text" name="name" id="name" class="form-control card-border">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" name="password" id="password" class="form-control card-border">
+                </div>
+            </div>
+            <div class="button-section">
+                <div class="px-2 py-1">
+                    <button type="submit" class="btn btn-primary card-border" style="width: 142px; height: 100px;">로그인</button>
+                </div>
+                <div class="px-2 py-2">
+                    <a th:href="@{/customer/signup}" class="link">계정이 없으신가요?</a>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">비밀번호</label>
-            <input type="password" name="password" id="password" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary">로그인</button>
+        
     </form>
 </div>
 </html>
