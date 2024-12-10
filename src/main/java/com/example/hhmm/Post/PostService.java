@@ -63,7 +63,7 @@ public class PostService {
     public Page<PostDTO> getPostList(int page, String kw) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("regDate"));
-        Pageable pageable = PageRequest.of(page, 8, Sort.by(sorts));
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(sorts));
         Specification<Post> spec = search(kw);
         Page<Post> posts = postRepository.findAll(spec, pageable);
         return posts.map(PostDTO::new);

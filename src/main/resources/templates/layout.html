@@ -10,9 +10,9 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <!-- Bootstrap Icons CDN 링크 추가 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <title>Hi, hhmm</title>
+    <title>Hi, hhm</title>
 </head>
-<body>
+<body style="background-color: #f3faff;">
 <!-- 네비게이션바 -->
 <nav th:replace="~{navbar :: navbarFragment}"></nav>
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
@@ -20,8 +20,25 @@
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
 <!-- Bootstrap JS -->
 <script th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 카카오 주소 js -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <!-- 자바스크립트 Start -->
 <th:block layout:fragment="script"></th:block>
+<script type='text/javascript'>
+    const page_elements = document.getElementsByClassName("page-link");
+    Array.from(page_elements).forEach(function(element) {
+        element.addEventListener('click', function() {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+        });
+    });
+    const btn_search = document.getElementById("btn_search");
+    btn_search.addEventListener('click', function() {
+        document.getElementById('kw').value = document.getElementById('search_kw').value;
+        document.getElementById('page').value = 0;  // 검색버튼을 클릭할 경우 0페이지부터 조회한다.
+        document.getElementById('searchForm').submit();
+    });
+</script>
 <!-- 자바스크립트 End -->
 </body>
 </html>

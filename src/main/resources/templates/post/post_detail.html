@@ -7,7 +7,7 @@
             <div class="card-body">
                 <!-- 이미지 -->
                 <div class="d-flex">
-                    <div class="card card-border justify-content-center me-3 p-3" style="width: 500px; height: 500px;">
+                    <div class="card card-border justify-content-center me-5 p-3" style="width: 600px; height: 500px;">
                         <span th:if="${postDTO.itemDTO.quantity == 0}" style="width: 50px; height: 50px;">
                             <img src="../event/soldout.png" style="width: 100%; height: 100%;">
                         </span>
@@ -17,7 +17,7 @@
                         <!-- 상품명 -->
                         <span class="mb-2 mt-1"><h5><b>[[${postDTO.itemDTO.itemName}]]</b></h5></span>
                         <!-- 내용 -->
-                        <span class="card card-border mb-2 p-3" style="width: 375px; height: 353px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
+                        <span class="card card-border mb-2 p-3" style="width: 550px; height: 360px;" th:utext="${@commonUtil.markdown(postDTO.content)}"></span>
                         <!-- 가격 -->
                         <b class="mb-1"><span th:text="${#numbers.formatDecimal(postDTO.itemDTO.price,3,'COMMA', 0, 'POINT') + '원'}"></span></b>
                         <!-- 남은 개수 -->

@@ -3,17 +3,6 @@
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <div class="row mx-1 my-3">
-            <div class="col-7">
-                <a th:if="${#lists.contains(authority, '[ROLE_MM]')}" th:href="@{/posts/create}" class="btn btn-primary">상품 등록하기</a>
-            </div>
-            <div class="col-5">
-                <div class="input-group">
-                    <input type="text" id="search_kw" class="form-control card-border" th:value="${kw}">
-                    <button class="btn card-border" style="width: 50px; height: 40px;" type="button" id="btn_search"><img src="/icon/search.png" style="width: 100%; height: 100%; object-fit:fill;"></button>
-                </div>
-            </div>
-        </div>
         <div class="mb-3">
             <div class="d-flex align-items-center justify-content-center">
                 <h4><b>
@@ -23,33 +12,32 @@
             <hr class="hr-border mx-3 mb-2">
         </div>
         <table class="d-flex justify-content-center m-2 mb-4">
-            <tr th:each="rowIndex : ${#numbers.sequence(0, postDTOs.content.size() / 4)}">
+            <tr th:each="rowIndex : ${#numbers.sequence(0, postDTOs.content.size() / 3)}" class="d-flex justify-content-center">
                 <!-- 상품 파일 반복 시작 -->
-                <td class="px-3 py-2" th:each="colIndex : ${#numbers.sequence(0, 3)}" 
-                    th:if="${rowIndex * 4 + colIndex < postDTOs.content.size()}">      
+                <td class="d-flex flex-column justify-content-center align-items-center px-3 py-2" th:each="colIndex : ${#numbers.sequence(0, 2)}" 
+                    th:if="${rowIndex * 3 + colIndex < postDTOs.content.size()}">      
                     <div class="card card-border mb-2" style="width: 222px; height: 222px;">
-                        <div class="card-body d-flex justify-content-center">
+                        <div class="card-body">
                             <div>
-                                <a th:href="@{|/posts/${postDTOs.content[rowIndex * 4 + colIndex].postId}|}">
-                                <img th:src="@{|/file_path/${postDTOs.content[rowIndex * 4 + colIndex].itemDTO.filePath}|}"
-                                     
+                                <a th:href="@{|/posts/${postDTOs.content[rowIndex * 3 + colIndex].postId}|}">
+                                <img th:src="@{|/file_path/${postDTOs.content[rowIndex * 3 + colIndex].itemDTO.filePath}|}"
                                     alt="상품 이미지 혹은 동영상"
                                     style="width: 100%; height: 100%; object-fit: contain;">
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-center">
-                        [[${postDTOs.content[rowIndex * 4 + colIndex].itemDTO.itemName}]]
+                    <div>
+                        [[${postDTOs.content[rowIndex * 3 + colIndex].itemDTO.itemName}]]
                     </div>
-                    <div class="d-flex justify-content-center">
+                    <div>
                         <b>
-                        [[${#numbers.formatDecimal(postDTOs.content[rowIndex * 4 + colIndex].itemDTO.price, 3, 'COMMA', 0, 'POINT')}]]원
+                        [[${#numbers.formatDecimal(postDTOs.content[rowIndex * 3 + colIndex].itemDTO.price, 3, 'COMMA', 0, 'POINT')}]]원
                         </b>
                     </div>
-                    <div class="d-flex justify-content-center">
+                    <div>
                         <i class="bi-star-fill" style="color: gold; font-size: 0.9rem;"></i>
-                        &nbsp;[[${postDTOs.content[rowIndex * 4 + colIndex].starpoint}]]점
+                        &nbsp;[[${postDTOs.content[rowIndex * 3 + colIndex].starpoint}]]점
                     </div>
                 </td>
                 <!-- 상품 파일 반복 끝-->
@@ -81,19 +69,4 @@
             <input type="hidden" id="page" name="page" th:value="${postDTOs.number}">
         </form>
     </div>
-    <script layout:fragment="script" type='text/javascript'>
-        const page_elements = document.getElementsByClassName("page-link");
-        Array.from(page_elements).forEach(function(element) {
-            element.addEventListener('click', function() {
-                document.getElementById('page').value = this.dataset.page;
-                document.getElementById('searchForm').submit();
-            });
-        });
-        const btn_search = document.getElementById("btn_search");
-        btn_search.addEventListener('click', function() {
-            document.getElementById('kw').value = document.getElementById('search_kw').value;
-            document.getElementById('page').value = 0;  // 검색버튼을 클릭할 경우 0페이지부터 조회한다.
-            document.getElementById('searchForm').submit();
-        });
-        </script>
 </html>
