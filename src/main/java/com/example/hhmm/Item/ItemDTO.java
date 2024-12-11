@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -36,5 +38,15 @@ public class ItemDTO {
         this.price = item.getPrice();
         this.quantity = item.getQuantity();
         this.filePath = item.getFilePath();
+    }
+
+    public static ItemDTO toDTO(Item item) {
+        return new ItemDTO(
+            item.getItemId(),
+            item.getItemName(),
+            item.getPrice(),
+            item.getQuantity(),
+            item.getFilePath()
+        );
     }
 }

@@ -90,7 +90,7 @@
             <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
-                <input class="card-text" style="border-width: 0; background-color: white;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
+                <input class="card-text" style="border-width: 0; background-color: white; min-width: 500px;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark text-start">
                         <table>
@@ -164,7 +164,7 @@
             </div>
             <textarea sec:authorize="isAnonymous()" th:field="*{content}" class="form-control card-border" rows="10" disabled></textarea>
             <input type="hidden" name="starpoint" id="comment-starpoint" value="0">
-            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control card-border" rows="10"></textarea>
+            <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control card-border" style="resize: none;" rows="10"></textarea>
             <button type="submit" class="btn card-border mt-3">후기 등록</button>
         </form>
     </div>

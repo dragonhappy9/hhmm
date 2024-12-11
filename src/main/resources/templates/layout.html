@@ -12,12 +12,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <title>Hi, hhm</title>
 </head>
+
 <body style="background-color: #f3faff;">
+
 <!-- 네비게이션바 -->
 <nav th:replace="~{navbar :: navbarFragment}"></nav>
+
 <!-- 기본 템플릿 안에 삽입될 내용 Start -->
-<th:block layout:fragment="content"></th:block>
+<th:block layout:fragment="parent">
+    <th:block layout:fragment="content"></th:block>
+    <th:block layout:fragment="extra_content"></th:block>
+</th:block>
 <!-- 기본 템플릿 안에 삽입될 내용 End -->
+
 <!-- Bootstrap JS -->
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <!-- 카카오 주소 js -->

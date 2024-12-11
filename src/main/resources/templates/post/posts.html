@@ -1,5 +1,6 @@
 <html layout:decorate="~{layout}">
-    <div layout:fragment="content" class="container my-3">
+<div layout:fragment="parent" class="d-flex">
+    <div layout:fragment="content" class="container flex-fill my-3">
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
@@ -69,4 +70,20 @@
             <input type="hidden" id="page" name="page" th:value="${postDTOs.number}">
         </form>
     </div>
+    <div layout:fragment="extra_content" class="flex-shrink-1 sidebar m-3 p-3">
+        <div>
+            <div class="mb-2"><strong>오늘의 인기상품!</strong></div>
+            <div th:each="todayItem : ${todayItems}" class="d-flex flex-column mb-2" style="font-size: 12px;">
+                <b>[[${todayItem.itemDTO.itemName}]]</b>
+            </div>
+        </div>
+        <hr class="card-border">
+        <div>
+            <div class="mb-2"><strong>어제의 인기상품!</strong></div>
+            <div th:each="yesterdayItem: ${yesterdayItems}" class="d-flex flex-column mb-2" style="font-size: 12px;">
+                <b>[[${yesterdayItem.itemDTO.itemName}]]</b>
+            </div>
+        </div>
+    </div>
+</div>
 </html>

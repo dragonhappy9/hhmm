@@ -1,5 +1,6 @@
 package com.example.hhmm.Bucket;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,9 @@ import com.example.Exception.DataNotFoundException;
 import com.example.hhmm.Customer.Customer;
 import com.example.hhmm.Customer.CustomerRepository;
 import com.example.hhmm.Item.Item;
+import com.example.hhmm.Item.ItemLog;
+import com.example.hhmm.Item.ItemLogId;
+import com.example.hhmm.Item.ItemLogRepository;
 import com.example.hhmm.Item.ItemRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ public class BucketService {
     
     private final CustomerRepository customerRepository;
     private final ItemRepository itemRepository;
+    private final ItemLogRepository itemLogRepository;
     private final BucketRepository bucketRepository;
 
     @Transactional
@@ -71,20 +76,48 @@ public class BucketService {
                 totalPrice += item.getPrice() * bucketItemDTO.getQuantity();
                 itemList.add(item);
             }else{
+                // 트랜잭션 내부에서 return을 하는경우 이는 정상적인 처리를 뜻한다. 그러므로 여기서 무결성을 보장하기 위해서는 
+                // return이 아닌 예외처리를 해야한다. 추후에 리팩토링 해보자!
                 return "해당 상품의 남은 수량이 구매하려는 수량보다 적습니다! \n 상품명: " + item.getItemName() + "\n남은 개수: " + item.getQuantity();
             }
         }
         
         if (customerMoney < totalPrice) {
+            // 이것도
             return "잔액이 부족합니다.";
         }
 
         customer.setPayMoney(customerMoney - totalPrice);
-        customerRepository.save(customer);  // 결제
+        customerRepository.save(customer);
 
         for(int i = 0; i < bucketItemDTOs.size(); i++){
             BucketItemDTO bucketItemDTO = bucketItemDTOs.get(i);
-            // 독점락 걸어서 결제 완료까지 업데이트, 삭제 막기
+
+            Item item = new Item(bucketItemDTO.getItemDTO());
+
+            // Item이 이미 DB에 있는 경우 findById로 가져오기
+            Optional<Item> existingItem = itemRepository.findById(item.getItemId());
+            if (existingItem.isPresent()) {
+                item = existingItem.get();
+            } else {
+                // Item을 직접 새로 저장하지 않고, 영속 상태로 관리
+                item = itemRepository.saveAndFlush(item);
+            }
+
+            // 로그 저장 아이디를 가지고 있기에 save(itemlog)는 데이터가 존재하는 경우에는 update를 수행
+            ItemLogId itemLogId = new ItemLogId(item, LocalDate.now());
+            Optional<ItemLog> _itemLog = itemLogRepository.findById(itemLogId);
+
+            if(_itemLog.isPresent()){ // 업데이트
+                int updateQuantity = bucketItemDTO.getQuantity() + _itemLog.get().getSoldQuantity();
+                ItemLog itemlog = new ItemLog(itemLogId, updateQuantity);
+                itemLogRepository.save(itemlog);
+            }else{ // 저장
+                ItemLog itemlog = new ItemLog(itemLogId, bucketItemDTO.getQuantity());
+                itemLogRepository.save(itemlog);
+            }
+            
+            // 독점락 걸어서 작업 완료까지 업데이트, 삭제 막기
             Item lockedItem = itemRepository.findWithExclusiveLock(itemList.get(i).getItemId())
                                         .orElseThrow(() -> new DataNotFoundException("Item not found"));
 

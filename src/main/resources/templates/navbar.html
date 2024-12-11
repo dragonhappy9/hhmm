@@ -15,16 +15,17 @@
                     <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/customer/signup}">회원가입</a>
                 </li>
                 <li>
-                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/posts}">상품 목록</a>
+                    <a class="nav-link" th:href="@{/posts}">상품 목록</a>
                 </li>
                 <li>
-                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/posts/create}">상품 등록하기</a>
+                    <span sec:authentication th:property="principal.nickname"></span>
+                    <a class="nav-link" sec:authorize="hasRole('ROLE_MM')" th:href="@{/posts/create}">상품 등록하기</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/bucket}"><img src="/icon/bucket.png" style="width:25px; height: 25px;"></a>
+                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/bucket}"><img src="/icon/bucket.png" style="width:21px; height: 21px;"></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/message}"><img src="/icon/message.png" style="width:25px; height: 25px;"></a>
+                    <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/message}"><img src="/icon/message.png" style="width:21px; height: 21px;"></a>
                 </li>
             </ul>
         </div>

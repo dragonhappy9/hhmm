@@ -32,6 +32,19 @@ input.form-control.underline-input:focus {
     box-shadow: none; /* 기본 포커스 효과 제거 */
 }
 
+/* posts 우측 고정항목 */
+.sidebar {
+    position: absolute;
+    width: 200px; /* 영역의 너비 */
+    height: 425px;
+    right: 0; /* 컨테이너 오른쪽에 위치 */
+    transform: translateY(30%); /* 정확히 세로축 중앙에 정렬 */
+    background-color: #f3faff; /* 배경색 */
+    border: 1px solid #0095ff; /* 테두리 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
+    z-index: 1000; /* 다른 요소 위에 표시되도록 우선순위 설정 */
+}
+
 .card-border{
     border-color: #adddff;
 }
