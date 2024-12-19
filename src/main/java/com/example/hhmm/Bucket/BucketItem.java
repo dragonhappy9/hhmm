@@ -10,13 +10,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 public class BucketItem {
     
@@ -41,13 +39,6 @@ public class BucketItem {
         this.bucket = bucket;
         this.item = item;
         this.quantity = quantity;
-        this.id = new BucketItemId(bucket.getBucketId(), item.getItemId());
-    }
-
-    public BucketItem(BucketItemDTO bucketItemDTO) {
-        this.bucket = new Bucket(bucketItemDTO.getBucketDTO());
-        this.item = new Item(bucketItemDTO.getItemDTO());
-        this.quantity = bucketItemDTO.getQuantity();
-        this.id = new BucketItemId(bucket.getBucketId(), item.getItemId());
+        this.id = new BucketItemId(bucket.getBucketId(), item.getId());
     }
 }

@@ -18,29 +18,26 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@NoArgsConstructor  // 기본 생성자를 자동으로 생성해주는 어노테이션
-@Getter             // Getter와 Setter를 자동으로 생성해주는 각각의 어노테이션
-@Setter
-@Entity             // 현재 클래스를 Entity클래스로 설정해주는 어노테이션
+@NoArgsConstructor // 기본 생성자를 자동으로 생성해주는 어노테이션
+@Data
+@Entity // 현재 클래스를 Entity클래스로 설정해주는 어노테이션
 public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long postId;
+    private Long id;
 
-    @Column(nullable = false, length = 30)
-    private String nickname;
-    
+    @Column(nullable = false, length = 50)
+    private String title;
+
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;
+    private String itemDescript;
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @Column(nullable = false, length = 20)
+    private String name;
 
     @Column(nullable = false, columnDefinition= "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime regDate;
@@ -54,26 +51,24 @@ public class Post {
     @Column(nullable = false)
     private float starpoint;
 
-    // 부모 Entity의 삭제 영속성을 상속하여 자동으로 자식 Entity를 삭제, Post를 읽어올때 Comment들도 읽어오도록 변경
+    // post 생성, 삭제시 item도 생성 삭제 자동 / post불러올 때 항상 같이 불러오기
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "item_id")
+    private Item item;
+
+    // post 삭제시 comment도 생성 삭제 자동 / post불러올 때 같이불러오지 않고 comment에 접근시 불러오기
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)     
     @JoinColumn(name = "post_id")
     private List<Comment> comments = new ArrayList<>();
 
+    // 데이터베이스에 저장되기 직전 자동 호출되어 초기화
     @PrePersist
     protected void onCreate() {
         if (this.regDate == null) {
-            this.regDate = LocalDateTime.now();     // Post가 생성될 때 현재 시간을 저장
+            this.regDate = LocalDateTime.now();
         }
-        this.updateDate = null;                     // 수정 시간을 포함시킴
+        this.updateDate = null;
         this.viewCount = 0;
         this.starpoint = 0;
-    }
-
-    public Post (PostDTO postDTO){
-        this.nickname = postDTO.getNickname();
-        this.content = postDTO.getContent();
-        if (postDTO.getItemDTO() != null) {
-            this.item = new Item(postDTO.getItemDTO());
-        }
     }
 }

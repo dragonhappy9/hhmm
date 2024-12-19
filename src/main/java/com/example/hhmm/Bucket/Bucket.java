@@ -10,13 +10,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Entity
 public class Bucket {
 
@@ -24,13 +22,11 @@ public class Bucket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bucketId;
 
+    // 하나의 Bucket은 여러 BucketItem을 가질 수 있음
+    // Bucket이 삭제, 생성, BucketItem도 동일하게 적용
+    // Bucket과 BucketItem의 관계가 끊어진다면 해당 BucketItem을 자동으로 삭제
     @OneToMany(mappedBy = "bucket", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<BucketItem> itemList = new ArrayList<>();
-
-    public Bucket(BucketDTO bucketDTO){
-        this.bucketId = bucketDTO.getBucketId();
-        this.itemList = bucketDTO.getItemList().stream().map(BucketItem::new).collect(Collectors.toList());
-    }
     
     public void addBucket(BucketItem bucketItem){
         // id가 동일한 객체가 존재하면 bucketItem의 quantity수량을 합치고 기존 아이템을 제거
@@ -49,4 +45,7 @@ public class Bucket {
         bucketItem.setBucket(null);
     }
 }
-
+    // public Bucket(BucketDTO bucketDTO){
+    //     this.bucketId = bucketDTO.getBucketId();
+    //     this.itemList = bucketDTO.getItemList().stream().map(BucketItem::new).collect(Collectors.toList());
+    // }
