@@ -4,19 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class BucketDTO {
 
     private Long bucketId;
 
     private List<BucketItemDTO> itemList = new ArrayList<>();
 
-    public BucketDTO(Bucket bucket){
-        this.bucketId = bucket.getBucketId();
-        this.itemList = bucket.getItemList().stream().map(bucketItem -> new BucketItemDTO(bucketItem, false)).collect(Collectors.toList());
+    public static BucketDTO toDTO(Bucket bucket){
+        return new BucketDTO(
+            bucket.getBucketId(),
+            bucket.getItemList().stream()
+                .map(BucketItemDTO::new)
+                .collect(Collectors.toList())
+        );
     }
 }

@@ -3,33 +3,36 @@ package com.example.hhmm.Comment;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class CommentDTO {
 
-    private Long commentId;
+    private Long id;
     private String nickname;
 
-    @NotEmpty(message="댓글 내용은 필수항목입니다.")
+    @NotEmpty(message="후기를 작성하신다면 내용을 적어주세요.")
+    @Size(max = 1000, message = "내용은 최대 1000자까지 입력 가능합니다.")
     private String content;
-
     private LocalDateTime regDate;
     private LocalDateTime updateDate;
     private float starpoint;
     private Long postId;
 
-    public CommentDTO(Comment comment) {    
-        this.commentId = comment.getCommentId();
-        this.nickname = comment.getNickname();
-        this.content = comment.getContent();
-        this.regDate = comment.getRegDate();
-        this.updateDate = comment.getUpdateDate();
-        this.starpoint = comment.getStarpoint();
-        this.postId = comment.getPostId();
+    public static CommentDTO toDTO(Comment comment) {
+        return new CommentDTO(
+            comment.getId(),
+            comment.getNickname(),
+            comment.getContent(),
+            comment.getRegDate(),
+            comment.getUpdateDate(),
+            comment.getStarpoint(),
+            comment.getPostId()
+        );
     }
 }
