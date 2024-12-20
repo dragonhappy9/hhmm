@@ -21,7 +21,7 @@ public class BucketDTO {
         return new BucketDTO(
             bucket.getBucketId(),
             bucket.getItemList().stream()
-                .map(BucketItemDTO::new)
+                .map(BucketItemDTO::toDTO)
                 .collect(Collectors.toList())
         );
     }
