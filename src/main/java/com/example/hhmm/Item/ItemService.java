@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Exception.DataNotFoundException;
+import com.example.hhmm.ItemLog.ItemLog;
+import com.example.hhmm.ItemLog.ItemLogDTO;
+import com.example.hhmm.ItemLog.ItemLogMapper;
+import com.example.hhmm.ItemLog.ItemLogRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +52,7 @@ public class ItemService {
     public List<ItemLogDTO> getTodayItemLog(){
         List<ItemLog> todayItemLog = itemLogRepository.findRankedBySoldDate(LocalDate.now());
         List<ItemLogDTO> todayItemLogDTO = todayItemLog.stream()
-            .map(itemLog -> ItemLogDTO.toDTO(itemLog))
+            .map(itemLog -> ItemLogMapper.toDTO(itemLog))
             .collect(Collectors.toList());
         return todayItemLogDTO;
     }
@@ -57,7 +61,7 @@ public class ItemService {
     public List<ItemLogDTO> getYesterdayItemLog(){
         List<ItemLog> yesterdayItemLog = itemLogRepository.findRankedBySoldDate(LocalDate.now().minusDays(1));
         List<ItemLogDTO> yesterdayItemLogDTO = yesterdayItemLog.stream()
-            .map(itemLog -> ItemLogDTO.toDTO(itemLog))
+            .map(itemLog -> ItemLogMapper.toDTO(itemLog))
             .collect(Collectors.toList());
         return yesterdayItemLogDTO;
     }

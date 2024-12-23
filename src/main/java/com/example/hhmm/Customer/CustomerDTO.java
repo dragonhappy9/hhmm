@@ -32,16 +32,4 @@ public class CustomerDTO {
 
     @NotEmpty(message = "주소는 필수항목입니다.")
     private String home;
-
-    public static CustomerDTO toDTO(Customer customer){
-        return new CustomerDTO(
-            customer.getCId(), 
-            customer.getCPw(), 
-            null, 
-            customer.getName(), 
-            customer.getNickname(), 
-            customer.isGender(), 
-            customer.getHome()
-        );
-    }
 }

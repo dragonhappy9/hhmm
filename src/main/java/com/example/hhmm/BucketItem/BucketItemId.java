@@ -1,4 +1,4 @@
-package com.example.hhmm.Bucket;
+package com.example.hhmm.BucketItem;
 
 import java.io.Serializable;
 

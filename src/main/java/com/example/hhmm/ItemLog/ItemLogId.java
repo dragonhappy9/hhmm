@@ -1,8 +1,10 @@
-package com.example.hhmm.Item;
+package com.example.hhmm.ItemLog;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import com.example.hhmm.Item.Item;
 
 import lombok.Data;
 

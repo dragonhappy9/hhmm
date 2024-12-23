@@ -28,8 +28,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.hhmm.Comment.CommentDTO;
 import com.example.hhmm.Customer.CustomUserDetails;
-import com.example.hhmm.Item.ItemLogDTO;
 import com.example.hhmm.Item.ItemService;
+import com.example.hhmm.ItemLog.ItemLogDTO;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

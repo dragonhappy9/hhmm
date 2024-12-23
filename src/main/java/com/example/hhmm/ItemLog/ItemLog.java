@@ -1,6 +1,8 @@
-package com.example.hhmm.Item;
+package com.example.hhmm.ItemLog;
 
 import java.time.LocalDate;
+
+import com.example.hhmm.Item.Item;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -3,8 +3,8 @@ package com.example.hhmm.Item;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.hhmm.Bucket.BucketItem;
-import com.example.hhmm.Post.Post;
+import com.example.hhmm.BucketItem.BucketItem;
+import com.example.hhmm.ItemLog.ItemLog;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,7 +14,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +26,6 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(length = 50, nullable = false)
     private String itemName;
 

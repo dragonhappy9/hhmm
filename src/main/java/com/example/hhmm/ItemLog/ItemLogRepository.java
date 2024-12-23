@@ -1,4 +1,4 @@
-package com.example.hhmm.Item;
+package com.example.hhmm.ItemLog;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

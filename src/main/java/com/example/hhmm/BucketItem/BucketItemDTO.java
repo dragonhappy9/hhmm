@@ -1,5 +1,6 @@
-package com.example.hhmm.Bucket;
+package com.example.hhmm.BucketItem;
 
+import com.example.hhmm.Bucket.BucketDTO;
 import com.example.hhmm.Item.ItemDTO;
 
 import lombok.AllArgsConstructor;
@@ -15,15 +16,6 @@ public class BucketItemDTO {
     private BucketDTO bucketDTO;
     private ItemDTO itemDTO;
     private int quantity;
-
-    public static BucketItemDTO toDTO(BucketItem bucketItem){
-        return new BucketItemDTO(
-            bucketItem.getId(),
-            BucketDTO.toDTO(bucketItem.getBucket()),
-            ItemDTO.toDTO(bucketItem.getItem()),
-            bucketItem.getQuantity()
-        );
-    }
 }
 // public BucketItemDTO(BucketItem bucketItem, boolean includeBucket){
 //     this.id = bucketItem.getId();

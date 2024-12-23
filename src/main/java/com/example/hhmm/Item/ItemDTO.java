@@ -27,16 +27,4 @@ public class ItemDTO {
     private Integer quantity;
 
     private String filePath;
-    private String postId;
-
-    public static ItemDTO toDTO(Item item) {
-        return new ItemDTO(
-            item.getId(),
-            item.getItemName(),
-            item.getPrice(),
-            item.getQuantity(),
-            item.getFilePath(),
-            item.getPostId()
-        );
-    }
 }

@@ -1,5 +1,6 @@
-package com.example.hhmm.Bucket;
+package com.example.hhmm.BucketItem;
 
+import com.example.hhmm.Bucket.Bucket;
 import com.example.hhmm.Item.Item;
 
 import jakarta.persistence.Column;

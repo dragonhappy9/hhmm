@@ -2,7 +2,8 @@ package com.example.hhmm.Bucket;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.example.hhmm.BucketItem.BucketItem;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ public class Bucket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bucketId;
+    private Long id;
 
     // 하나의 Bucket은 여러 BucketItem을 가질 수 있음
     // Bucket이 삭제, 생성, BucketItem도 동일하게 적용

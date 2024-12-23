@@ -43,114 +43,72 @@ public class PostService {
             @Override
             public Predicate toPredicate(@NonNull Root<Post> q, @Nullable CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
                 if (query != null) {
-                    query.distinct(true);  // query가 null이 아닐 때만 중복 제거 설정
+                    query.distinct(true); // query가 null이 아닐 때만 중복 제거 설정
                 }
                 Join<Post, Comment> a = q.join("comments", JoinType.LEFT);
                 Join<Post, Item> b = q.join("item", JoinType.LEFT);
-
+                
+                String keyword = "%" + kw.trim() + "%";
                 return cb.or(
-                        cb.like(q.get("content"), "%" + kw + "%"),      // 내용 
-                        cb.like(q.get("nickname"), "%" + kw + "%"),    // 질문 작성자 
-                        cb.like(a.get("content"), "%" + kw + "%"),      // 답변 내용 
-                        cb.like(a.get("nickname"), "%" + kw + "%"),   // 답변 작성자
-                        cb.like(b.get("itemName"), "%" + kw + "%"));      // Item 이름
+                        cb.like(q.get("title"), keyword), // 제목
+                        cb.like(q.get("itemDescript"), keyword), // 상품설명
+                        cb.like(q.get("name"), keyword), // 게시글 작성자 
+                        cb.like(a.get("content"), keyword), // 후기 내용 
+                        cb.like(a.get("nickname"), keyword), // 후기 작성자 별명
+                        cb.like(b.get("itemName"), keyword)); // Item 이름
             }
         };
     }
 
     // Post 목록 가져오기
     @Transactional(readOnly = true)
-    public Page<PostDTO> getPostList(int page, String kw) {
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.desc("regDate"));
-        Pageable pageable = PageRequest.of(page, 6, Sort.by(sorts));
-        Specification<Post> spec = search(kw);
-        Page<Post> posts = postRepository.findAll(spec, pageable);
-        return posts.map(PostDTO::new);
+    public Page<PostDTO> getPostList(int page, String kw) { // 요청한 페이지번호와 검색어
+        List<Sort.Order> sorts = new ArrayList<>(); // 정렬기준
+        sorts.add(Sort.Order.desc("regDate")); // 등록일수 기준 정렬
+        Pageable pageable = PageRequest.of(page, 6, Sort.by(sorts)); // 페이징조건
+        Specification<Post> spec = search(kw); // 검색조건
+        Page<Post> posts = postRepository.findAll(spec, pageable); // 검색조건, 페이징조건에 따라 Post검색
+        return posts.map(PostMapper::toDTO); // DTO로 변환하여 반환
     }
 
     // Post 가져오기
     @Transactional(readOnly = true)
-    public PostDTO getPost(Long postId){
+    public PostDTO getPost(Long postId, boolean ViewCountUp){
         Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
-
-        float post_starpoint = 0;
-        int comment_size = post.getComments().size();
+        float postStarPoint = 0;
         int count = 0;
+        int commentSize = post.getComments().size();
 
-        if (comment_size > 0) { // 댓글이 있고
-            for (int i = 0; i < comment_size; i++) {
+        if (commentSize > 0) { // 댓글이 있고
+            for (int i = 0; i < commentSize ; i++) {
                 Comment comment = post.getComments().get(i);
-                
-                if(comment.getStarpoint() != 0) { // 별점이 0인거 빼고
-                    post_starpoint += comment.getStarpoint();
+
+                if(comment.getStarpoint() != 0) { // 별점이 0이 아닌 후기만 집계
+                    postStarPoint += comment.getStarpoint();
                     count++;
                 }
             }
-    
-            if (count > 0) { // count0일때 나누면 NaN
-                post_starpoint /= count;
-            } else {
-                post_starpoint = 0;
-            }
+            postStarPoint = (count > 0) ? (postStarPoint / count) : 0; // count가 0일때 나누면 NaN에러
         } else {
-            post_starpoint = 0;
+            postStarPoint = 0;  // 댓글이 없으면 별점은 0
         }
-        post.setStarpoint(post_starpoint);
 
-        PostDTO postDTO = new PostDTO(post);
-        postDTO.setCommentDTOs(post.getComments().stream()
-                              .map(CommentDTO::new)
-                              .collect(Collectors.toList()));
-        return postDTO;
+        if (ViewCountUp) { // 조회수 증가를 필요시에만
+            post.setViewCount(post.getViewCount() + 1);
+        }
+
+        post.setStarpoint(postStarPoint);
+        return PostMapper.toDTO(post);
     }
 
-    // Post Create
+    // Post 생성
     @Transactional
     public void createPost(PostDTO postDTO){
         Post post = new Post(postDTO);
         this.postRepository.save(post);
     }
-
-    // Post Read
-    @Transactional(readOnly = true)
-    public PostDTO readPost(Long postId) {
-        Post post = this.postRepository.findByIdWithComments(postId)
-                        .orElseThrow(() -> new DataNotFoundException("Post not found"));
-        post.setViewCount(post.getViewCount() + 1);  // 조회수 증가
-
-        float post_starpoint = 0;
-        int comment_size = post.getComments().size();
-        int count = 0;
     
-        if (comment_size > 0) { // 댓글이 있고
-            for (int i = 0; i < comment_size; i++) {
-                Comment comment = post.getComments().get(i);
-                
-                if(comment.getStarpoint() != 0) { // 별점이 0인거 빼고
-                    post_starpoint += comment.getStarpoint();
-                    count++;
-                }
-            }
-    
-            if (count > 0) { // count0일때 나누면 NaN
-                post_starpoint /= count;
-            } else {
-                post_starpoint = 0;
-            }
-        } else {
-            post_starpoint = 0;  // 댓글이 없으면 별점은 0
-        }
-
-        post.setStarpoint(post_starpoint);
-        
-        PostDTO postDTO = new PostDTO(post);
-        postDTO.setCommentDTOs(post.getComments().stream()
-                              .map(CommentDTO::new)
-                              .collect(Collectors.toList()));
-        return postDTO;
-    }
 
     // Post Update
     @Transactional

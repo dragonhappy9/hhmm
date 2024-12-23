@@ -2,7 +2,8 @@ package com.example.hhmm.Bucket;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import com.example.hhmm.BucketItem.BucketItemDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,16 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BucketDTO {
 
-    private Long bucketId;
-
+    private Long id;
     private List<BucketItemDTO> itemList = new ArrayList<>();
-
-    public static BucketDTO toDTO(Bucket bucket){
-        return new BucketDTO(
-            bucket.getBucketId(),
-            bucket.getItemList().stream()
-                .map(BucketItemDTO::toDTO)
-                .collect(Collectors.toList())
-        );
-    }
 }
