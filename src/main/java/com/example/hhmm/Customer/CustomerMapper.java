@@ -1,6 +1,18 @@
 package com.example.hhmm.Customer;
 
 public class CustomerMapper {
+
+    public static Customer toEntity(CustomerDTO customerDTO){
+        Customer customer = new Customer();
+        customer.setCId(customerDTO.getCId());
+        customer.setCPw(customerDTO.getCPw());
+        customer.setName(customerDTO.getName());
+        customer.setNickname(customerDTO.getNickname());
+        customer.setHome(customerDTO.getHome());
+        customer.setGender(customer.isGender());
+        return customer;
+    }
+
     public static CustomerDTO toDTO(Customer customer){
         return new CustomerDTO(
             customer.getCId(), 
@@ -8,8 +20,8 @@ public class CustomerMapper {
             null, 
             customer.getName(), 
             customer.getNickname(), 
-            customer.isGender(), 
-            customer.getHome()
+            customer.getHome(),
+            customer.isGender() 
         );
     }
 }

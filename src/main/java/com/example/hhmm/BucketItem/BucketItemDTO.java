@@ -1,6 +1,5 @@
 package com.example.hhmm.BucketItem;
 
-import com.example.hhmm.Bucket.BucketDTO;
 import com.example.hhmm.Item.ItemDTO;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class BucketItemDTO {
 
     private BucketItemId id;
-    private BucketDTO bucketDTO;
+    private Long bucketId;
     private ItemDTO itemDTO;
     private int quantity;
 }
