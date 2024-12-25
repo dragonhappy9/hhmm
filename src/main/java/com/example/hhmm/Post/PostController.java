@@ -41,7 +41,8 @@ public class PostController {
     
     private final PostService postService;
     private final ItemService itemService;
-    // Post 전체 불러오기
+    
+    // Post 목록 불러오기
     @GetMapping
     public String posts(Model model, @RequestParam(value="page", defaultValue="0") int page, 
                         @RequestParam(value = "kw", defaultValue = "") String kw,
@@ -59,7 +60,8 @@ public class PostController {
     // postId로 Post 검색
     @GetMapping("/{postId}")
     public String read(Model model, @PathVariable("postId") Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        PostDTO postDTO = this.postService.readPost(postId);
+        boolean viewCountUp = true;
+        PostDTO postDTO = this.postService.getPost(postId, viewCountUp);
         if (userDetails != null) {
             model.addAttribute("customerNickname", userDetails.getNickname());
         }
@@ -70,7 +72,7 @@ public class PostController {
         return "post/post_detail";
     }
 
-    // 파일 전송
+    // 파일 업로드
     @PostMapping("/uploadFile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -97,11 +99,16 @@ public class PostController {
     // Post 생성 요청
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public String createPost(@Valid PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String createPost(
+        @Valid PostDTO postDTO, 
+        BindingResult bindingResult, 
+        RedirectAttributes redirectAttributes, 
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
         if (bindingResult.hasErrors()) {
             return "post/post_create";
         }
-        postDTO.setNickname(userDetails.getNickname());
+        postDTO.setName(userDetails.getName());
         postService.createPost(postDTO);
         redirectAttributes.addFlashAttribute("message", "Post create 성공");
         return "redirect:/posts";
@@ -110,10 +117,15 @@ public class PostController {
     // Post 수정 폼으로 이동
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{postId}/edit")
-    public String editForm(Model model, @PathVariable("postId") Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        PostDTO postDTO = postService.getPost(postId);
-        String nickname = userDetails.getNickname();
-        if (!postDTO.getNickname().equals(nickname)) {
+    public String editForm(
+        Model model, 
+        @PathVariable("postId") Long postId, 
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        boolean viewCountUp = false;
+        PostDTO postDTO = postService.getPost(postId, viewCountUp);
+        String name = userDetails.getName();
+        if (!postDTO.getName().equals(name)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         model.addAttribute("postDTO", postDTO);
@@ -124,26 +136,35 @@ public class PostController {
     // Post 수정 요청
     @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{postId}")
-    public String editPost(PostDTO postDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        PostDTO _postDTO = postService.getPost(postDTO.getPostId());
-        String nickname = userDetails.getNickname();
-        if(!_postDTO.getNickname().equals(nickname)){
+    public String editPost(
+        PostDTO postDTO, BindingResult bindingResult, 
+        RedirectAttributes redirectAttributes, 
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        boolean viewCountUp = false;
+        PostDTO _postDTO = postService.getPost(postDTO.getId(), viewCountUp);
+        String name = userDetails.getName();
+        if (!postDTO.getName().equals(name)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        postService.updatePost(postDTO.getPostId(), postDTO);
+        postService.updatePost(postDTO.getId(), postDTO);
         redirectAttributes.addFlashAttribute("message", "Post update 성공");
-        return "redirect:/posts/" + postDTO.getPostId();
+        return "redirect:/posts/" + postDTO.getId();
     }
 
      // Post 삭제 요청
     @DeleteMapping("/{postId}")
-    public String deletePost(@PathVariable("postId") Long postId, RedirectAttributes redirectAttributes, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        PostDTO postDTO = postService.getPost(postId);
-        String nickname = userDetails.getNickname();
-        if(!postDTO.getNickname().equals(nickname)){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
+    public String deletePost(
+        @PathVariable("postId") Long postId, 
+        RedirectAttributes redirectAttributes, 
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        PostDTO postDTO = postService.getPost(postId, false);
+        String name = userDetails.getName();
+        if (!postDTO.getName().equals(name)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        postService.deletePost(postDTO.getPostId());
+        postService.deletePost(postDTO.getId());
         redirectAttributes.addFlashAttribute("message", "Post delete 성공");
         return "redirect:/posts";
     }

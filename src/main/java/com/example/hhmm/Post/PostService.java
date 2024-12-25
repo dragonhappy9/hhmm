@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.Exception.DataNotFoundException;
 import com.example.hhmm.Comment.Comment;
-import com.example.hhmm.Comment.CommentDTO;
 import com.example.hhmm.Item.Item;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -22,7 +21,6 @@ import jakarta.persistence.criteria.Root;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -73,7 +71,7 @@ public class PostService {
 
     // Post 가져오기
     @Transactional(readOnly = true)
-    public PostDTO getPost(Long postId, boolean ViewCountUp){
+    public PostDTO getPost(Long postId, boolean viewCountUp){
         Post post = this.postRepository.findByIdWithComments(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found"));
         float postStarPoint = 0;
@@ -94,7 +92,7 @@ public class PostService {
             postStarPoint = 0;  // 댓글이 없으면 별점은 0
         }
 
-        if (ViewCountUp) { // 조회수 증가를 필요시에만
+        if (viewCountUp) { // 조회수 증가를 필요시에만
             post.setViewCount(post.getViewCount() + 1);
         }
 
@@ -105,26 +103,23 @@ public class PostService {
     // Post 생성
     @Transactional
     public void createPost(PostDTO postDTO){
-        Post post = new Post(postDTO);
+        Post post = PostMapper.toEntity(postDTO);
         this.postRepository.save(post);
     }
     
 
-    // Post Update
+    // Post 업데이트
+    // 입력받을 값 : title, itemDescript, Item
     @Transactional
     public void updatePost(Long postId, PostDTO postDTO){
         Post post = this.postRepository.findById(postId)
                         .orElseThrow(() -> new DataNotFoundException("Post not found")); 
-        Item item = post.getItem();
-        post.setContent(postDTO.getContent());
+        post = PostMapper.toEntity(postDTO);
         post.setUpdateDate(LocalDateTime.now());
-        item.setItemName(postDTO.getItemDTO().getItemName());
-        item.setPrice(postDTO.getItemDTO().getPrice());
-        item.setQuantity(postDTO.getItemDTO().getQuantity());
-        post.setItem(item);
         this.postRepository.save(post);
     }
 
+    // Post 삭제
     @Transactional
     public void deletePost(Long postId) {
         this.postRepository.deleteById(postId);

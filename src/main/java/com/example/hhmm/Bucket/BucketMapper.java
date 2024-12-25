@@ -10,16 +10,19 @@ public class BucketMapper {
         Bucket bucket = new Bucket();
         bucket.setId(bucketDTO.getId());
         bucket.setItemList(
-            bucketDTO.getItemList().stream()
+            bucketDTO.getItemList()
+                .stream()
                 .map(BucketItemMapper::toEntity)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList())
+        );
         return bucket;
     }
 
     public static BucketDTO toDTO(Bucket bucket){
         return new BucketDTO(
             bucket.getId(),
-            bucket.getItemList().stream()
+            bucket.getItemList()
+                .stream()
                 .map(BucketItemMapper::toDTO)
                 .collect(Collectors.toList())
         );

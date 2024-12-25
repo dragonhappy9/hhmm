@@ -8,11 +8,10 @@ import com.example.hhmm.Item.ItemDTO;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Data
 public class PostDTO {
@@ -27,8 +26,29 @@ public class PostDTO {
     private LocalDateTime updateDate;
     private int viewCount;
     private float starpoint;
-    private List<CommentDTO> comments;
+    private List<CommentDTO> commentDTOs;
 
     @Valid
     private ItemDTO itemDTO;
+
+    public PostDTO(Long id,
+        String title,
+        String itemDescript,
+        String name,
+        LocalDateTime regDate,
+        LocalDateTime updateDate,
+        int viewCount,
+        float starpoint,
+        ItemDTO itemDTO
+    ){
+        this.id = id;
+        this.title = title;
+        this.itemDescript = itemDescript;
+        this.name = name;
+        this.regDate = regDate;
+        this.updateDate = updateDate;
+        this.viewCount = viewCount;
+        this.starpoint = starpoint;
+        this.itemDTO = itemDTO;
+    }
 }
