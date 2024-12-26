@@ -8,31 +8,37 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
     
-    private String username;
-    private String password;
+    private String c_id;
+    private String c_pw;
     private List<GrantedAuthority> authorities;
     private String nickname; // 닉네임 정보를 포함하기 위해 넣었다.
+    private String name;
 
-    public CustomUserDetails(String username, String password, List<GrantedAuthority> authorities, String nickname) {
-        this.username = username;
-        this.password = password;
+    public CustomUserDetails(String c_id, String c_pw, List<GrantedAuthority> authorities, String nickname, String name) {
+        this.c_id = c_id;
+        this.c_pw = c_pw;
         this.authorities = authorities;
         this.nickname = nickname;
+        this.name = name;
     }
 
     public String getNickname() {
         return nickname;
     }
 
+    public String getName(){
+        return name;
+    }
+
     // UserDetails 인터페이스 메서드 구현
     @Override
     public String getUsername() {
-        return username;
+        return c_id;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return c_pw;
     }
 
     @Override

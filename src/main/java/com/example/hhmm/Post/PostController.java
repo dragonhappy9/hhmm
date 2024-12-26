@@ -144,10 +144,10 @@ public class PostController {
         boolean viewCountUp = false;
         PostDTO _postDTO = postService.getPost(postDTO.getId(), viewCountUp);
         String name = userDetails.getName();
-        if (!postDTO.getName().equals(name)) {
+        if (!_postDTO.getName().equals(name)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
-        postService.updatePost(postDTO.getId(), postDTO);
+        postService.updatePost(postDTO.getId(), _postDTO);
         redirectAttributes.addFlashAttribute("message", "Post update 성공");
         return "redirect:/posts/" + postDTO.getId();
     }

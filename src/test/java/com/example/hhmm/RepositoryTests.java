@@ -1,15 +1,14 @@
-// package com.example.hhmm;
+package com.example.hhmm;
 
 // import org.junit.jupiter.api.Test;
 // import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 // import com.example.hhmm.Comment.Comment;
 // import com.example.hhmm.Comment.CommentRepository;
+// import com.example.hhmm.Customer.CustomerRepository;
+// import com.example.hhmm.Customer.*;
 // import com.example.hhmm.Item.Item;
-// import com.example.hhmm.Item.ItemLog;
-// import com.example.hhmm.Item.ItemLogId;
-// import com.example.hhmm.Item.ItemLogRepository;
 // import com.example.hhmm.Item.ItemRepository;
 // import com.example.hhmm.Post.Post;
 // import com.example.hhmm.Post.PostDTO;
@@ -19,19 +18,36 @@
 // import java.time.LocalDate;
 // import java.util.Optional;
 
-// @SpringBootTest
-// class RepositoryTests {
+@SpringBootTest
+class RepositoryTests {
 
-//     @Autowired
-//     private PostRepository postRepository;
-//     @Autowired
-//     private CommentRepository commentRepository;
-//     @Autowired
-//     private PostService postService;
-//     @Autowired
-//     private ItemRepository itemRepository;
-//     @Autowired
-//     private ItemLogRepository itemLogRepository;
+    // @Autowired
+    // private PostRepository postRepository;
+    // @Autowired
+    // private CommentRepository commentRepository;
+    // @Autowired
+    // private PostService postService;
+    // @Autowired
+    // private ItemRepository itemRepository;
+    // @Autowired
+    // private ItemLogRepository itemLogRepository;
+    // @Autowired
+    // private CustomerRepository customerRepository;
+
+    // @Test
+    // void newCustomerJPA(){
+    //     for(int i = 1; i <= 1000; i++){
+    //         Customer customer = new Customer();
+    //         customer.setCId(String.valueOf(i));
+    //         customer.setCPw("testpswd"+i);
+    //         customer.setName("testname"+i);
+    //         customer.setNickname("testninm"+i);
+    //         customer.setHome("testhome"+i);
+    //         customer.setGender(true);
+    //         customer.setPayMoney(i*1000);
+    //         this.customerRepository.save(customer);
+    //     }
+    // }
 
     // @Test
     // void saveOrUpdateItemLogJPA(){
@@ -76,4 +92,4 @@
     //         this.commentRepository.save(comment);
     //     }
     // }
-// }
+}
