@@ -17,7 +17,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-     @GetMapping("/signup")
+    @GetMapping("/signup")
     public String signup(CustomerDTO customerDTO) {
         return "customer/signup";
     }
@@ -28,7 +28,7 @@ public class CustomerController {
             return "customer/signup";
         }
 
-        if (!customerDTO.getPassword().equals(customerDTO.getPasswordChk())) {
+        if (!customerDTO.getCPw().equals(customerDTO.getPasswordChk())) {
             bindingResult.rejectValue("passwordChk", "passwordInCorrect", 
                     "패스워드가 일치하지 않습니다.");
             return "customer/signup";

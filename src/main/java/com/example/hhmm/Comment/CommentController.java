@@ -2,8 +2,7 @@ package com.example.hhmm.Comment;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,66 +32,74 @@ public class CommentController {
     // Comment 생성요청
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{postId}/comments")
-    public String createComment(Model model, @PathVariable("postId") Long postId, @Valid CommentDTO commentDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
-        PostDTO postDTO = this.postService.getPost(postId);
-        if(bindingResult.hasErrors()){
+    public String createComment(
+        Model model, 
+        @PathVariable("postId") Long postId, 
+        @Valid CommentDTO commentDTO, 
+        BindingResult bindingResult, 
+        RedirectAttributes redirectAttributes,
+        @AuthenticationPrincipal CustomUserDetails userDetails 
+    ){
+        boolean viewCountUp = false;
+        PostDTO postDTO = this.postService.getPost(postId, viewCountUp);
+
+        // Valid(유효성 검증)을 수행하고 통과하지 못하면 통과하지 못한 부분을 알려줌 
+        if(bindingResult.hasErrors()){  
             model.addAttribute("postDTO", postDTO);
             model.addAttribute("commentDTO", commentDTO);
             return "post/post_detail";
         }
 
-        // Authentication 객체에서 CustomUserDetails를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        // @AuthenticationPrincipal로 매개변수를 통해 쉽게 userDetails를 가져올수도 있음!
         String nickname = userDetails.getNickname();
-
         commentDTO.setNickname(nickname);
         commentDTO = commentService.createComment(postId, commentDTO);
         
         redirectAttributes.addFlashAttribute("message", "Comment create 성공");
-        return "redirect:/posts/" + postId +"#commentDTO_" + commentDTO.getCommentId();
+
+        // 앵커를 적용하여 자신이 작성한 후기로 리다이렉트 시킨다.
+        return "redirect:/posts/" + postId + "#commentDTO_" + commentDTO.getId();
     }
     
-    // Post 수정 요청
+    // Comment 수정 요청
     @PreAuthorize("isAuthenticated()")
-    // updateComment 요청
     @PatchMapping("/{postId}/comments/{commentId}")
-    public String editComment(@Valid CommentDTO commentDTO, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String editComment(
+        @Valid CommentDTO commentDTO, 
+        BindingResult bindingResult, 
+        RedirectAttributes redirectAttributes, 
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
         if (bindingResult.hasErrors()) {
             return "post/post_detail";
         }
-        CommentDTO _commentDTO = commentService.getComment(commentDTO.getCommentId()); 
 
-        // Authentication 객체에서 CustomUserDetails를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        CommentDTO _commentDTO = commentService.getComment(commentDTO.getId()); 
         String nickname = userDetails.getNickname();
-
         if(!_commentDTO.getNickname().equals(nickname)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "수정권한이 없습니다.");
         }
         
-        commentService.updateComment(commentDTO.getCommentId(), commentDTO);
+        commentService.updateComment(commentDTO.getId(), commentDTO);
         redirectAttributes.addFlashAttribute("message", "Comment update 성공");
-        return "redirect:/posts/" + commentDTO.getPostId();
+        return "redirect:/posts/" + commentDTO.getId();
     }
 
     // deleteComment 요청
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public String deleteComment(CommentDTO commentDTO, RedirectAttributes redirectAttributes) {
-        CommentDTO _commentDTO = commentService.getComment(commentDTO.getCommentId()); 
-
-        // Authentication 객체에서 CustomUserDetails를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    public String deleteComment(
+        CommentDTO commentDTO, 
+        RedirectAttributes redirectAttributes,
+        @AuthenticationPrincipal CustomUserDetails userDetails    
+    ) {
+        CommentDTO _commentDTO = commentService.getComment(commentDTO.getId());
         String nickname = userDetails.getNickname();
-
         if(!_commentDTO.getNickname().equals(nickname)){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제권한이 없습니다.");
         }
 
-        commentService.deleteComment(commentDTO.getCommentId());
+        commentService.deleteComment(commentDTO.getId());
         redirectAttributes.addFlashAttribute("message", "Comment delete 성공");
-        return "redirect:/posts/" + commentDTO.getPostId();
+        return "redirect:/posts/" + commentDTO.getId();
     }
 }
