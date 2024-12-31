@@ -22,7 +22,7 @@ public class CommentService {
     public List<CommentDTO> getCommentsByPost(Long postId) {
         List<Comment> comments = commentRepository.findByPostId(postId);
         return comments.stream()
-            .map(CommentDTO::new)
+            .map(CommentMapper::toDTO)
             .collect(Collectors.toList());
     }
 
@@ -30,23 +30,23 @@ public class CommentService {
     @Transactional(readOnly = true)
     public CommentDTO getComment(Long commentId){
         Comment comment = this.commentRepository.findById(commentId)
-                                .orElseThrow(() -> new DataNotFoundException("Comment not found"));
-        return new CommentDTO(comment);
+            .orElseThrow(() -> new DataNotFoundException("Comment not found"));
+        return CommentMapper.toDTO(comment);
     }
 
     // Comment Create 
     @Transactional
-    public CommentDTO createComment(Long postId, CommentDTO commentDTO) {
-        Comment comment = new Comment(commentDTO);
+    public Long createComment(Long postId, CommentDTO commentDTO) {
+        Comment comment = CommentMapper.toEntity(commentDTO);
         commentRepository.save(comment);
-        return new CommentDTO(comment);
+        return comment.getId();
     }
 
     // Comment Update
     @Transactional
     public void updateComment(Long commentId, CommentDTO commentDTO){
         Comment comment = this.commentRepository.findById(commentId)
-                                .orElseThrow(() -> new DataNotFoundException("Comment not found"));
+            .orElseThrow(() -> new DataNotFoundException("Comment not found"));
         comment.setContent(commentDTO.getContent());
         comment.setStarpoint(commentDTO.getStarpoint());
         comment.setUpdateDate(LocalDateTime.now());

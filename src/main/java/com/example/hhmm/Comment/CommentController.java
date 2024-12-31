@@ -53,12 +53,12 @@ public class CommentController {
         // @AuthenticationPrincipal로 매개변수를 통해 쉽게 userDetails를 가져올수도 있음!
         String nickname = userDetails.getNickname();
         commentDTO.setNickname(nickname);
-        commentDTO = commentService.createComment(postId, commentDTO);
+        Long commentId = commentService.createComment(postId, commentDTO);
         
         redirectAttributes.addFlashAttribute("message", "Comment create 성공");
 
         // 앵커를 적용하여 자신이 작성한 후기로 리다이렉트 시킨다.
-        return "redirect:/posts/" + postId + "#commentDTO_" + commentDTO.getId();
+        return "redirect:/posts/" + postId + "#commentDTO_" + commentId;
     }
     
     // Comment 수정 요청
