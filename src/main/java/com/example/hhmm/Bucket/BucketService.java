@@ -9,11 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Exception.DataNotFoundException;
+import com.example.Exception.PayException;
 import com.example.hhmm.BucketItem.BucketItem;
 import com.example.hhmm.BucketItem.BucketItemDTO;
 import com.example.hhmm.Customer.Customer;
 import com.example.hhmm.Customer.CustomerRepository;
 import com.example.hhmm.Item.Item;
+import com.example.hhmm.Item.ItemMapper;
 import com.example.hhmm.Item.ItemRepository;
 import com.example.hhmm.ItemLog.ItemLog;
 import com.example.hhmm.ItemLog.ItemLogId;
@@ -49,8 +51,8 @@ public class BucketService {
     @Transactional(readOnly = true)
     public List<BucketItemDTO> getBucketItemList(String customerNickname){
         Customer customer = customerRepository.findByNickname(customerNickname)
-                                                .orElseThrow(() -> new DataNotFoundException("Customer not found"));
-        BucketDTO bucketDTO = new BucketDTO(customer.getBucket()); 
+                                .orElseThrow(() -> new DataNotFoundException("Customer not found"));
+        BucketDTO bucketDTO = BucketMapper.toDTO(customer.getBucket()); 
         List<BucketItemDTO> bucketItemDTOs = bucketDTO.getItemList();
         return bucketItemDTOs;
     }
@@ -59,7 +61,7 @@ public class BucketService {
     @Transactional
     public String buyBucketItem(List<BucketItemDTO> bucketItemDTOs, String nickname) {
         Customer customer = customerRepository.findByNickname(nickname)
-                                                .orElseThrow(()-> new DataNotFoundException("Customer not found"));       
+                                .orElseThrow(()-> new DataNotFoundException("Customer not found"));       
         
         int customerMoney = customer.getPayMoney();
         int totalPrice = 0;
@@ -70,7 +72,7 @@ public class BucketService {
 
         for (BucketItemDTO bucketItemDTO : bucketItemDTOs) {
             // 공유락을 통해 아이템 수량을 확인하여 결제 여부를 구분
-            Item item = itemRepository.findWithSharedLock(bucketItemDTO.getItemDTO().getItemId())
+            Item item = itemRepository.findWithSharedLock(bucketItemDTO.getItemDTO().getId())
                 .orElseThrow(() -> new DataNotFoundException("Item not found"));
             
             // 현재 남은 수량이 담은 수량보다 클 때
@@ -78,15 +80,14 @@ public class BucketService {
                 totalPrice += item.getPrice() * bucketItemDTO.getQuantity();
                 itemList.add(item);
             }else{
-                // 트랜잭션 내부에서 return을 하는경우 이는 정상적인 처리를 뜻한다. 그러므로 여기서 무결성을 보장하기 위해서는 
-                // return이 아닌 예외처리를 해야한다. 추후에 리팩토링 해보자!
-                return "해당 상품의 남은 수량이 구매하려는 수량보다 적습니다! \n 상품명: " + item.getItemName() + "\n남은 개수: " + item.getQuantity();
+                // 예외처리 클래스를 만들어 던져버렷
+                throw new PayException("해당 상품의 남은 수량이 구매하려는 수량보다 적습니다! \n 상품명: " + item.getItemName() + "\n남은 개수: " + item.getQuantity());
             }
         }
         
         if (customerMoney < totalPrice) {
             // 이것도
-            return "잔액이 부족합니다.";
+            throw new PayException("잔액이 부족합니다.");
         }
 
         customer.setPayMoney(customerMoney - totalPrice);
@@ -95,10 +96,10 @@ public class BucketService {
         for(int i = 0; i < bucketItemDTOs.size(); i++){
             BucketItemDTO bucketItemDTO = bucketItemDTOs.get(i);
 
-            Item item = new Item(bucketItemDTO.getItemDTO());
+            Item item = ItemMapper.toEntity(bucketItemDTO.getItemDTO());
 
             // Item이 이미 DB에 있는 경우 findById로 가져오기
-            Optional<Item> existingItem = itemRepository.findById(item.getItemId());
+            Optional<Item> existingItem = itemRepository.findById(item.getId());
             if (existingItem.isPresent()) {
                 item = existingItem.get();
             } else {
@@ -120,17 +121,18 @@ public class BucketService {
             }
             
             // 독점락 걸어서 작업 완료까지 업데이트, 삭제 막기
-            Item lockedItem = itemRepository.findWithExclusiveLock(itemList.get(i).getItemId())
-                                        .orElseThrow(() -> new DataNotFoundException("Item not found"));
+            Item lockedItem = itemRepository.findWithExclusiveLock(itemList.get(i).getId())
+                                .orElseThrow(() -> new DataNotFoundException("Item not found"));
 
             lockedItem.setQuantity(lockedItem.getQuantity() - bucketItemDTO.getQuantity());
             itemRepository.save(lockedItem); // 결제된 아이템 수량 빼기
         }
 
+        // 결제한 장바구니 아이템 지우기
         for(int i = bucketItemDTOs.size(); i > 0; i--){
             bucket.removeBucket(bucketItem.get(i - 1));
         }
-        bucketRepository.save(bucket); // 결제한 장바구니 아이템 지우기
+        bucketRepository.save(bucket); 
 
         return "결제가 완료되었습니다.";
     }

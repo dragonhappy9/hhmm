@@ -22,7 +22,7 @@ public class CustomerSecurityService implements UserDetailsService {
     // Username -> c_id(내가사용한 유저아이디), password -> c_pw(내가사용한 유저비밀번호) 
     @Override
     public UserDetails loadUserByUsername(String c_id) throws UsernameNotFoundException {
-        Optional<Customer> _customer = this.customerRepository.findByCId(c_id);
+        Optional<Customer> _customer = this.customerRepository.findBycId(c_id);
         if (_customer.isEmpty()){
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
         }

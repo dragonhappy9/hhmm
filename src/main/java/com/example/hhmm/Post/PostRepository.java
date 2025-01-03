@@ -18,8 +18,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAll(Specification<Post> spec, Pageable pageable);
 
-    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments WHERE p.postId = :postId")
-    Optional<Post> findByIdWithComments(@Param("postId") Long postId);
+    @Query("SELECT p FROM Post p LEFT JOIN FETCH p.comments WHERE p.id = :id")
+    Optional<Post> findByIdWithComments(@Param("id") Long id);
 
     
 }

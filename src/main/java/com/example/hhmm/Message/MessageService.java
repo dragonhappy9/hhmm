@@ -34,7 +34,7 @@ public class MessageService {
     public MessageDTO getMessage(Long messageId){
         Message message = messageRepository.findById(messageId)
             .orElseThrow(()-> new DataNotFoundException("쪽지를 찾을 수 없습니다." + messageId));
-        return MessageDTO.toDTO(message);
+        return MessageMapper.toDTO(message);
     }
 
 
@@ -50,7 +50,7 @@ public class MessageService {
         for(Message message : messages) {
             // 내가 삭제한 메세지가 아니라면 모두 표시
             if(!message.isDeletedByReceiver()) {
-                messageDTOs.add(MessageDTO.toDTO(message));
+                messageDTOs.add(MessageMapper.toDTO(message));
             }
         }
         return messageDTOs;
@@ -68,7 +68,7 @@ public class MessageService {
         for(Message message : messages) {
             // 내가 삭제한 메세지가 아니라면 모두 표시
             if(!message.isDeletedBySender()) {
-                messageDTOs.add(MessageDTO.toDTO(message));
+                messageDTOs.add(MessageMapper.toDTO(message));
             }
         }
         return messageDTOs;

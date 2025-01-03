@@ -40,6 +40,6 @@ public class BucketItem {
         this.bucket = bucket;
         this.item = item;
         this.quantity = quantity;
-        this.id = new BucketItemId(bucket.getBucketId(), item.getId());
+        this.id = new BucketItemId(bucket.getId(), item.getId());
     }
 }
