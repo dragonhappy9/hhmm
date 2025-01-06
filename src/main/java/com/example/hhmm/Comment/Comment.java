@@ -45,4 +45,11 @@ public class Comment {
         }
         this.updateDate = null;
     }
+
+    public Comment(String content, String nickname, float starpoint, Long postId){
+        this.content = content;
+        this.nickname = nickname;
+        this.starpoint = starpoint;
+        this.postId = postId;
+    }
 }
