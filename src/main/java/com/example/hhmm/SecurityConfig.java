@@ -40,8 +40,8 @@ public class SecurityConfig {
             .formLogin((formLogin) -> formLogin
                 .loginPage("/customer/login")
                 .defaultSuccessUrl("/posts")
-                .usernameParameter("name") // username파라미터를 "name"으로 변경
-                .passwordParameter("password")) // 위와 동일
+                .usernameParameter("cId") // username파라미터를 "cId"으로 변경
+                .passwordParameter("cPw")) // 위와 동일
                 
             .logout((logout) -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/customer/logout"))

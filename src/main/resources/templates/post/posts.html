@@ -20,7 +20,7 @@
                     <div class="card card-border mb-2" style="width: 222px; height: 222px;">
                         <div class="card-body">
                             <div>
-                                <a th:href="@{|/posts/${postDTOs.content[rowIndex * 3 + colIndex].postId}|}">
+                                <a th:href="@{|/posts/${postDTOs.content[rowIndex * 3 + colIndex].id}|}">
                                 <img th:src="@{|/file_path/${postDTOs.content[rowIndex * 3 + colIndex].itemDTO.filePath}|}"
                                     alt="상품 이미지 혹은 동영상"
                                     style="width: 100%; height: 100%; object-fit: contain;">

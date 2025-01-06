@@ -17,19 +17,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Exception.DataNotFoundException;
 import com.example.hhmm.Bucket.Bucket;
 import com.example.hhmm.Comment.Comment;
 import com.example.hhmm.Comment.CommentRepository;
-import com.example.hhmm.Customer.*;
+import com.example.hhmm.Customer.Customer;
+import com.example.hhmm.Customer.CustomerRepository;
 import com.example.hhmm.Item.Item;
 import com.example.hhmm.Item.ItemRepository;
 import com.example.hhmm.ItemLog.ItemLogRepository;
 import com.example.hhmm.Post.Post;
-import com.example.hhmm.Post.PostDTO;
-import com.example.hhmm.Post.PostMapper;
 import com.example.hhmm.Post.PostRepository;
 import com.example.hhmm.Post.PostService;
 
@@ -58,6 +58,13 @@ class RepositoryTests {
     private ItemLogRepository itemLogRepository;
     @Autowired
     private CustomerRepository customerRepository;
+    @Autowired
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public RepositoryTests(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional(readOnly = true)
     private Specification<Post> search(String kw) {
@@ -89,7 +96,7 @@ class RepositoryTests {
             Customer customer = new Customer();
             Bucket bucket = new Bucket();
             customer.setCId(String.valueOf(i));
-            customer.setCPw("testpswd"+i);
+            customer.setCPw(passwordEncoder.encode("testpswd"+i));
             customer.setName("testname"+i);
             customer.setNickname("testninm"+i);
             customer.setHome("testhome"+i);
