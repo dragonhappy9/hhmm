@@ -1,5 +1,8 @@
 package com.example.hhmm.Post;
 
+import java.util.stream.Collectors;
+
+import com.example.hhmm.Comment.CommentMapper;
 import com.example.hhmm.Item.ItemMapper;
 
 public class PostMapper {
@@ -15,6 +18,11 @@ public class PostMapper {
         post.setViewCount(postDTO.getViewCount());
         post.setStarpoint(postDTO.getStarpoint());
         post.setItem(ItemMapper.toEntity(postDTO.getItemDTO()));
+        post.setComments(
+            postDTO.getCommentDTOs()
+                .stream()
+                .map(CommentMapper::toEntity)
+                .collect(Collectors.toList()));
         return post;
     }
 
@@ -28,7 +36,11 @@ public class PostMapper {
             post.getUpdateDate(),
             post.getViewCount(),
             post.getStarpoint(),
-            ItemMapper.toDTO(post.getItem())
+            ItemMapper.toDTO(post.getItem()),
+            post.getComments()
+                .stream()
+                .map(CommentMapper::toDTO)
+                .collect(Collectors.toList())
         );
     }
 }

@@ -28,7 +28,7 @@
                             <button id="increment" class="btn btn-sm card-border d-flex align-items-center justify-content-center mx-1" style="width: 21px; height: 21px;">+</button>
                             <button class="btn btn-sm card-border ms-2 p-1" sec:authorize="isAuthenticated()"
                                                                                  id="addBucket"
-                                                                                 th:data-itemid="${postDTO.itemDTO.itemId}"
+                                                                                 th:data-itemid="${postDTO.itemDTO.id}"
                                                                                  th:data-customernickname="${customerNickname}"
                                                                                  onclick="addBucket()">장바구니 담기</button>
                         </div>
@@ -87,10 +87,10 @@
         </div>
         <!-- 답변 반복 시작 -->
         <div class="card card-border mb-3" th:each="commentDTO : ${postDTO.commentDTOs}">
-            <a th:id="|commentDTO_${commentDTO.commentId}|"></a>
+            <a th:id="|commentDTO_${commentDTO.id}|"></a>
             <div class="card-body">
                 <!-- 답변 수정시 재사용 input 평소에는 disable=true이지만 수정할때는 false -->
-                <input class="card-text" style="border-width: 0; background-color: white; min-width: 500px;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.commentId}" disabled>
+                <input class="card-text" style="border-width: 0; background-color: white; min-width: 500px;" th:value="${commentDTO.content}" th:id="'comment-content-' + ${commentDTO.id}" disabled>
                 <div class="d-flex justify-content-end">
                     <div class="badge bg-light text-dark text-start">
                         <table>
@@ -113,7 +113,7 @@
                                 <td class="text-start py-2">별점</td>
                                 <td>&nbsp;:&nbsp;</td>
                                 <td>
-                                    <div th:id="'starpoint-comment-' + ${commentDTO.commentId}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}">
+                                    <div th:id="'starpoint-comment-' + ${commentDTO.id}" class="starpoint" th:data-starpoint="${commentDTO.starpoint}">
                                         <div class="star" data-value="1"></div>
                                         <div class="star" data-value="2"></div>
                                         <div class="star" data-value="3"></div>
@@ -128,18 +128,18 @@
                 </div>
                 <div class="d-flex" >
                     <!-- 수정 폼 -->
-                    <form class="me-1" th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
+                    <form class="me-1" th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.id}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="patch" />
-                        <input type="hidden" th:id="'copy-comment-content-' + ${commentDTO.commentId}" name="content" />
+                        <input type="hidden" th:id="'copy-comment-content-' + ${commentDTO.id}" name="content" />
 
                         <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}" >
-                            <button type="button" class="btn btn-sm card-border" th:id="'edit-comment-button-' + ${commentDTO.commentId}" th:onclick="'editComment(' + ${commentDTO.commentId} + ')'">수정</button>
-                            <button type="submit" class="btn btn-sm card-border d-none" th:id="'save-comment-button-' + ${commentDTO.commentId}" th:onclick="'copyInput(' + ${commentDTO.commentId} + ')'">저장</button>
-                            <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.commentId}" name="starpoint"></input>
+                            <button type="button" class="btn btn-sm card-border" th:id="'edit-comment-button-' + ${commentDTO.id}" th:onclick="'editComment(' + ${commentDTO.id} + ')'">수정</button>
+                            <button type="submit" class="btn btn-sm card-border d-none" th:id="'save-comment-button-' + ${commentDTO.id}" th:onclick="'copyInput(' + ${commentDTO.id} + ')'">저장</button>
+                            <input type="hidden" th:id="'edit-starpoint-' + ${commentDTO.id}" name="starpoint"></input>
                         </div>
                     </form>
                     <!-- 삭제 폼 -->
-                    <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.commentId}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
+                    <form th:action="@{|/posts/${commentDTO.postId}/comments/${commentDTO.id}|}" method="post" style="display:inline;" sec:authorize="isAuthenticated()">
                         <input type="hidden" name="_method" value="delete" />
                         <div>
                             <div th:if="${commentDTO.nickname != null and #authentication.getPrincipal().getNickname() == commentDTO.nickname}">
@@ -224,7 +224,7 @@
 
             // 초기 댓글 색칠
             commentStarpointElements.forEach(starpointElement => {
-                const commentId = starpointElement.id.split('-')[1];    // starpoint = [0] commentDTO.commentId = [1]
+                const commentId = starpointElement.id.split('-')[1];    // starpoint = [0] commentDTO.id = [1]
                 const starpoint = parseFloat(starpointElement.getAttribute('data-starpoint')) || 0;
                 const stars = starpointElement.getElementsByClassName('star')
                 const starpointDiv = document.getElementById('starpoint-' + commentId);

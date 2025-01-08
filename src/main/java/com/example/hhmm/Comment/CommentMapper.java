@@ -10,6 +10,7 @@ public class CommentMapper {
         comment.setRegDate(commentDTO.getRegDate());
         comment.setUpdateDate(commentDTO.getUpdateDate());
         comment.setStarpoint(commentDTO.getStarpoint());
+        comment.setPostId(commentDTO.getPostId());
         return comment;
     }
 
@@ -20,7 +21,8 @@ public class CommentMapper {
             comment.getNickname(),
             comment.getRegDate(),
             comment.getUpdateDate(),
-            comment.getStarpoint()
+            comment.getStarpoint(),
+            comment.getPostId()
         );
     }
 }

@@ -1,7 +1,7 @@
 <html layout:decorate="~{layout}">
     <div layout:fragment="content" class="container">
         <h5 class="mt-3 mb-3"><b>상품 수정</b></h5>
-        <form th:action="@{/posts/{postId}(postId=${postDTO.postId})}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
+        <form th:action="@{/posts/{postId}(postId=${postDTO.id})}" th:object="${postDTO}" method="post" enctype="multipart/form-data">
             <!-- 업데이트 요청시 사용됨 -->
             <input type="hidden" name="_method" value="patch" />
             <!-- 에러 메시지 출력 -->
@@ -58,7 +58,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <textarea name="content" class="form-control card-border" style="resize: none;" rows="17" th:text="${postDTO.content}"></textarea>
+                                    <textarea name="content" class="form-control card-border" style="resize: none;" rows="17" th:text="${postDTO.itemDescript}"></textarea>
                                 </td>
                             </tr>
                         </table>

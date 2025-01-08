@@ -39,7 +39,8 @@ public class PostDTO {
         LocalDateTime updateDate,
         int viewCount,
         float starpoint,
-        ItemDTO itemDTO
+        ItemDTO itemDTO,
+        List<CommentDTO> commentDTOs
     ){
         this.id = id;
         this.title = title;
@@ -50,5 +51,6 @@ public class PostDTO {
         this.viewCount = viewCount;
         this.starpoint = starpoint;
         this.itemDTO = itemDTO;
+        this.commentDTOs = commentDTOs;
     }
 }

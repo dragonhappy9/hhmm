@@ -22,4 +22,5 @@ public class CommentDTO {
     private LocalDateTime regDate;
     private LocalDateTime updateDate;
     private float starpoint;
+    private Long postId;
 }
