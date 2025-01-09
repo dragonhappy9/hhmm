@@ -9,7 +9,7 @@
                 <div class="row g-2">
                     <div>상품명</div>
                     <div>
-                        <input type="text" name="itemDTO.itemName" class="form-control card-border" th:value="|${postDTO.itemDTO.itemName != null ? postDTO.itemDTO.itemName : ''}|">
+                        <input type="text" name="itemDTO.itemName" class="form-control card-border" th:value="|${postDTO.itemDTO?.itemName != null ? postDTO.itemDTO.itemName : ''}|">
                     </div>
                     <div class="col-md-6">
                         <table class="mb-2 w-100" style="border-collapse: separate; border-spacing: 0px 5px;">
@@ -19,7 +19,7 @@
                             <tr>
                                 <td>
                                     <input type="file" class="form-control card-border" onchange="previewMedia(event)">
-                                    <input type="text" style="display: none;" id="filePath" name="itemDTO.filePath" th:value="|${postDTO.itemDTO.filePath != null ? postDTO.itemDTO.filePath : ''}|">
+                                    <input type="text" style="display: none;" id="filePath" name="itemDTO.filePath" th:value="|${postDTO.itemDTO?.filePath != null ? postDTO.itemDTO.filePath : ''}|">
                                 </td>
                             </tr>
                             <tr>
@@ -43,10 +43,10 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="text" name="itemDTO.price" class="form-control card-border" th:value="|${postDTO.itemDTO.price != null ? postDTO.itemDTO.price : ''}|">
+                                    <input type="text" name="itemDTO.price" class="form-control card-border" th:value="|${postDTO.itemDTO?.price != null ? postDTO.itemDTO.price : ''}|">
                                 </td>
                                 <td>
-                                    <input type="text" name="itemDTO.quantity" class="form-control card-border" th:value="|${postDTO.itemDTO.quantity != null ? postDTO.itemDTO.quantity : ''}|">
+                                    <input type="text" name="itemDTO.quantity" class="form-control card-border" th:value="|${postDTO.itemDTO?.quantity != null ? postDTO.itemDTO.quantity : ''}|">
                                 </td>
                             </tr>
                             <tr>
@@ -54,7 +54,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <textarea name="content" class="form-control card-border" style="resize: none;" rows="17" th:text="|${postDTO.content != null ? postDTO.content : ''}|"></textarea>
+                                    <textarea name="content" class="form-control card-border" style="resize: none;" rows="17" th:text="|${postDTO.itemDescript != null ? postDTO.itemDescript : ''}|"></textarea>
                                 </td>
                             </tr>
                         </table>

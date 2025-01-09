@@ -8,16 +8,20 @@
     <form th:action="@{/customer/signup}" th:object="${customerDTO}" method="post" class="card card-border m-3 p-4">
         <div th:replace="~{valid_errors :: validErrorsFragment}"></div>
         <div class="mb-3">
-            <label for="name" class="form-label">사용자ID</label>
-            <input type="text" th:field="*{name}" class="form-control card-border">
+            <label for="cId" class="form-label">사용자ID</label>
+            <input type="text" th:field="*{cId}" class="form-control card-border">
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">비밀번호</label>
-            <input type="password" th:field="*{password}" class="form-control card-border">
+            <label for="cPw" class="form-label">비밀번호</label>
+            <input type="password" th:field="*{cPw}" class="form-control card-border">
         </div>
         <div class="mb-3">
             <label for="passwordChk" class="form-label">비밀번호 확인</label>
             <input type="password" th:field="*{passwordChk}" class="form-control card-border">
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">이름</label>
+            <input type="text" th:field="*{name}" class="form-control card-border">
         </div>
         <div class="mb-3">
             <label for="nickname" class="form-label">닉네임</label>
