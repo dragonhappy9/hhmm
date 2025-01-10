@@ -35,6 +35,9 @@ public class Customer {
     @Column(length = 20, nullable = false, unique = true)
     private String nickname; // 닉네임은 unique 속성으로 무결성 유지
 
+    @Column(length = 40, nullable = false)
+    private String email;
+
     @Column(length = 50, nullable = false)
     private String home;
 

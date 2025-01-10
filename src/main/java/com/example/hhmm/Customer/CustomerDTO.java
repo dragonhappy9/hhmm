@@ -29,7 +29,10 @@ public class CustomerDTO {
     @NotEmpty(message = "닉네임은 필수항목입니다.")
     private String nickname;
 
-    @NotEmpty(message = "주소는 필수항목입니다.")
+    @NotEmpty(message = "이메일은 필수항목입니다.")
+    private String email;
+
+    @NotEmpty(message = "주소 입력은 필수항목입니다.")
     private String home;
 
     private boolean gender;

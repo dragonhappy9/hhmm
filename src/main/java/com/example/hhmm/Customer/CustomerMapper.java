@@ -8,6 +8,7 @@ public class CustomerMapper {
         customer.setCPw(customerDTO.getCPw());
         customer.setName(customerDTO.getName());
         customer.setNickname(customerDTO.getNickname());
+        customer.setEmail(customerDTO.getEmail());
         customer.setHome(customerDTO.getHome());
         customer.setGender(customer.isGender());
         return customer;
@@ -19,7 +20,8 @@ public class CustomerMapper {
             customer.getCPw(), 
             null, 
             customer.getName(), 
-            customer.getNickname(), 
+            customer.getNickname(),
+            customer.getEmail(),
             customer.getHome(),
             customer.isGender() 
         );
